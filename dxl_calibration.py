@@ -46,16 +46,22 @@ LEN_PRO_PRESENT_POSITION    = 4
 # Protocol version
 PROTOCOL_VERSION            = 2.0               # See which protocol version is used in the Dynamixel
 
-# Default setting
-BAUDRATE                    = 57600             # Dynamixel default baudrate : 57600
-DEVICENAME                  = 'COM5'    # Check which port is being used on your controller
-                                                # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 
 TORQUE_ENABLE               = 1                 # Value for enabling the torque
 TORQUE_DISABLE              = 0                 # Value for disabling the torque
 DXL_MOVING_STATUS_THRESHOLD = 20                # Dynamixel moving status threshold
-DXL_PROFILE_ACC = 10
-DXL_PROFILE_VEL = 100
+DXL_PROFILE_ACC = 50
+DXL_PROFILE_VEL = 500
+
+
+with open("config_comport.txt", "r") as file:
+  config_comport=eval(file.readline())
+print("dxl_param reading success!")
+
+# Comport Settings
+BAUDRATE                 = config_comport['RobotArm']['baudrate']  # Dynamixel default baudrate : 57600
+COMPORT                  = config_comport['RobotArm']['port']      # Check which port is being used on your controller
+                                                                   # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 
 
 
@@ -74,7 +80,7 @@ dxl_id_table =[0,1,2,3,4,5]
 # Initialize PortHandler instance
 # Set the port path
 # Get methods and members of PortHandlerLinux or PortHandlerWindows
-portHandler = PortHandler(DEVICENAME)
+portHandler = PortHandler(COMPORT)
 
 # Initialize PacketHandler instance
 # Set the protocol version
@@ -186,7 +192,7 @@ def get_calib_pos():
 calib_pos_angle={
   0:[-90, 90],
   1:[-90, 90],
-  2:[-140,140],
+  2:[-90,137],
   3:[-90, 90],
   4:[-90, 90],
   5:[  0, 90],
