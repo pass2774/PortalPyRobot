@@ -8,7 +8,6 @@ Three programs(command_socket.py, storm32.py, dynamixel_sync.py) operate indepen
 
 - Markdown for github README.md
 
-# Description
 
 ## Setup Poetry module for package management
 ### 0-1. Installing poetry 
@@ -35,6 +34,9 @@ source $HOME/.poetry/env
 
 * For package management, you have to install packages via poetry.
 
+## Description for main components
+
+
 1. prototype/command_socket.py --> for socket communication
 It gets command data in JSON format from socket and save it in "output.txt" file.
 
@@ -47,7 +49,7 @@ It reads command data for "arm" from "output.txt" file and control the motors by
 In the same manner, you have to specify the serial port.
 
 
-### Recommanded test procedure.
+## Recommanded test procedure.
 1-1. Run only 'command_socket.py' and check if "output.txt" changes.
 
 
