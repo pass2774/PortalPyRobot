@@ -11,9 +11,9 @@ Description
 0. Setup Poetry module for package management
 0-1. Installing poetry 
 * Method1: for Linux
-    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 * Method2: using pip
-    poetry install --user poetry
+     poetry install --user poetry
 
 -> 
 The path for 'poetry commands' is supposed to be automatically added to 'environment variable'. 
@@ -22,11 +22,11 @@ In the console, input:
 source $HOME/.poetry/env
 
 0-2. Frequently used poetry commands
-    poetry init
-    poetry update
-    poetry install
-    poetry add package_name(poetry add numpy)
-    poetry run python filename.py
+     poetry init
+     poetry update
+     poetry install
+     poetry add package_name(poetry add numpy)
+     poetry run python filename.py
 
 * For package management, you have to install packages via poetry.
 
