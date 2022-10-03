@@ -11,11 +11,11 @@ Three programs(command_socket.py, storm32.py, dynamixel_sync.py) operate indepen
 # Description
 
 0. Setup Poetry module for package management
-0-1. Installing poetry 
+### 0-1. Installing poetry 
 * Method1: for Linux
     ```
     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-     ```
+    ```
 * Method2: using pip
     ```
     poetry install --user poetry
@@ -26,24 +26,28 @@ If it does not work, you can use the poetry without adding 'poetry command' path
 In the console, input: 
 source $HOME/.poetry/env
 
-0-2. Frequently used poetry commands
+### 0-2. Frequently used poetry commands
     ```
     poetry init
+
     poetry update
+
     poetry install
+
     poetry add package_name(poetry add numpy)
+
     poetry run python filename.py
     ```
 * For package management, you have to install packages via poetry.
 
-1. command_socket.py --> for socket communication
+1. prototype/command_socket.py --> for socket communication
 It gets command data in JSON format from socket and save it in "output.txt" file.
 
-2. storm32.py --> for gimbal
+2. prototype/storm32.py --> for gimbal
 It reads command data for "gimbal" from "output.txt" file and control the gimbal by "serial communication".
 Accordingly, you have to specify the serial port(ex. COM1 for windows or usb/tty0 for linux) of the gimbal in the code.
 
-3. dynamixel_sync.py --> for robot with 6 motors
+3. prototype/dxl_robot.py --> for robot with 6 motors
 It reads command data for "arm" from "output.txt" file and control the motors by "serial communication".
 In the same manner, you have to specify the serial port.
 
