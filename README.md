@@ -1,7 +1,4 @@
-Three programs(command_socket.py, storm32.py, dynamixel_sync.py) operate independently.
-
-
-# References
+## References
 - Poetry: https://blog.gyus.me/2020/introduce-poetry/
 
 - Dynamixel: http://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_sdk/overview/
@@ -35,7 +32,7 @@ source $HOME/.poetry/env
 * For package management, you have to install packages via poetry.
 
 ## Description for main components
-
+Three programs(command_socket.py, storm32.py, dynamixel_sync.py) operate independently.
 
 1. prototype/command_socket.py --> for socket communication
 It gets command data in JSON format from socket and save it in "output.txt" file.
