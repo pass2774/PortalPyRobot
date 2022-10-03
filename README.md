@@ -27,17 +27,12 @@ In the console, input:
 source $HOME/.poetry/env
 
 ### 0-2. Frequently used poetry commands
-    ```
     poetry init
-
     poetry update
-
     poetry install
-
     poetry add package_name(poetry add numpy)
-
     poetry run python filename.py
-    ```
+
 * For package management, you have to install packages via poetry.
 
 1. prototype/command_socket.py --> for socket communication
