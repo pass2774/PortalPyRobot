@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "portal301farmbot"
+version = "0.1.0"
+description = ""
+authors = ["joonikChoi <omybell201@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^1.23.3"
+python-socketio = {version = "4.6.1", extras = ["asyncio_client"]}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
