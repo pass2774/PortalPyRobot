@@ -1,7 +1,32 @@
 Three programs(command_socket.py, storm32.py, dynamixel_sync.py) operate independently.
-Description
-0. poetry run python prototype/setup_dynamixel.py install
 
+
+References
+Poetry: https://blog.gyus.me/2020/introduce-poetry/
+Dynamixel: http://emanual.robotis.com/docs/en/software/dynamixel/dynamixel_sdk/overview/
+
+Description
+0. Setup Poetry module for package management
+0-1. Installing poetry 
+* Method1: for Linux
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+* Method2: using pip
+poetry install --user poetry
+
+-> 
+The path for 'poetry commands' is supposed to be automatically added to 'environment variable'. 
+If it does not work, you can use the poetry without adding 'poetry command' path to the environment variable.
+In the console, input: 
+source $HOME/.poetry/env
+
+0-2. Frequently used poetry commands
+- poetry init
+- poetry update
+- poetry install
+- poetry add package_name(poetry add numpy)
+- poetry run python filename.py
+
+* For package management, you have to install packages via poetry.
 
 1. command_socket.py --> for socket communication
 It gets command data in JSON format from socket and save it in "output.txt" file.
@@ -51,8 +76,11 @@ In the same manner, you have to specify the serial port.
 2-6. Okay, now let's use 'command_socket.py' instead of 'command_manual.py'.
 2-7. Transmit the command through the socket(Dr.YS will do it.)
 
+*3-0. poetry run python prototype/setup_dynamixel.py install
 
 *3-0. 'dynamixel_sync.py' --> I am busy and it is a little bit dangerour. Let's do it on Wednesday.
 
 (Below is under construction)
+
+
 3-1. run 'setup_dynamixel.py' it will install SDK for the dynamixel(dynamixel_sdk).
