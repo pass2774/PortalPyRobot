@@ -33,6 +33,7 @@ valid_range ={
     3:[ -180,180],
     4:[ -180,180],
     5:[ -180,180],
+    6:[ -180,180],
   }
 }
 try:
@@ -41,7 +42,7 @@ except:
   print("command file(output.txt) already exists. continuing..")
 else:
   idx = 0
-  arm = '{0:%d,1:%d,2:%d,3:%d,4:%d,5:%d}' % (0,0,0,0,0,0)
+  arm = '{0:%d,1:%d,2:%d,3:%d,4:%d,5:%d,6:%d}' % (0,0,0,0,0,0,0)
   arm = str(dxl_param["home-position"])
   gimbal = '{0:%d,1:%d,2:%d}' % (0,0,0)
   str_cmd = '{"idx":%d,"arm":%s,"gimbal":%s}' % (idx,arm,gimbal)

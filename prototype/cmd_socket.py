@@ -8,7 +8,7 @@ import time
 import json
 import cmd_manager
 
-cmd_manager.toHome()
+# cmd_manager.toHome()
 
 # sio = socketio.AsyncClient()
 sio = socketio.AsyncClient(engineio_logger=True,logger=True,ssl_verify=False)

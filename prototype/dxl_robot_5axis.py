@@ -90,7 +90,6 @@ dxl_param={
             3:20,
             4:20,
             5:10,
-            6:10,
         },
         "vel":{
             0:200,
@@ -99,7 +98,6 @@ dxl_param={
             3:150,
             4:150,
             5:150,
-            6:150,
         }
     },
     "home-position":{
@@ -109,7 +107,6 @@ dxl_param={
         3:  0,        
         4:  0,        
         5:  0,        
-        6:  0,        
     }
 }
 with open("dxl_param.txt", "w") as file:

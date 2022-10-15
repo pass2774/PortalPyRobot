@@ -62,7 +62,8 @@ print("dxl_param reading success!")
 BAUDRATE                 = config_comport['RobotArm']['baudrate']  # Dynamixel default baudrate : 57600
 COMPORT                  = config_comport['RobotArm']['port']      # Check which port is being used on your controller
                                                                    # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
-
+BUADRATE = 57600
+COMPORT = 'COM6'
 
 
 def interp_maps(x,map_x,map_y,dtype):
@@ -75,7 +76,7 @@ def interp_maps(x,map_x,map_y,dtype):
   return y
 
 
-dxl_id_table =[0,1,2,3,4,5]
+dxl_id_table =[0,1,2,3,4,5,6]
 
 # Initialize PortHandler instance
 # Set the port path
@@ -169,10 +170,12 @@ calib_guide={
   2:"Arm: reversed right angle & End-effecter: straight",
   3:"Arm: reversed right angle & End-effecter: backward right angle(adjust M4)",
   4:"Arm: reversed right angle & End-effecter: forward right angle(adjust M4)",
-  5:"Arm: reversed right angle & End-effecter: leftward right angle(adjust M3)",
-  6:"Arm: reversed right angle & End-effecter: rightward right angle(adjust M3)",
-  7:"End-effecter: grip-state",
-  8:"End-effecter: release-state",
+  5:"Arm: reversed right angle & End-effecter: 90 deg leftward(adjust M3)",
+  6:"Arm: reversed right angle & End-effecter: 90 deg rightward(adjust M3)",
+  7:"Arm: reversed right angle & End-effecter: 90 deg leftward rolling(adjust M5)",
+  8:"Arm: reversed right angle & End-effecter: 90 deg rightward rolling(adjust M5)",
+  9:"End-effecter: grip-state",
+  10:"End-effecter: release-state",
 }
 
 calib_pos_dxl={}
@@ -195,7 +198,8 @@ calib_pos_angle={
   2:[-90,137],
   3:[-90, 90],
   4:[-90, 90],
-  5:[  0, 90],
+  5:[-90, 90],
+  6:[  0, 90],
 }
 with open("dxl_calibration_angle.txt", "w") as file:
   file.write(str(calib_pos_angle))
@@ -216,7 +220,9 @@ def setCalibMap():
   idx=4
   range_map["raw"][idx]=[calib_pos_dxl[3][idx],calib_pos_dxl[4][idx]]
   idx=5
-  range_map["raw"][idx]=[calib_pos_dxl[8][idx],calib_pos_dxl[7][idx]]
+  range_map["raw"][idx]=[calib_pos_dxl[7][idx],calib_pos_dxl[8][idx]]
+  idx=6
+  range_map["raw"][idx]=[calib_pos_dxl[10][idx],calib_pos_dxl[9][idx]]
 
   return range_map
 
