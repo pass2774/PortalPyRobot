@@ -17,17 +17,6 @@
 # limitations under the License.
 ################################################################################
 
-# Author: Ryu Woon Jung (Leon)
-
-#
-# *********     Sync Read and Sync Write Example      *********
-#
-#
-# Available Dynamixel model on this example : All models using Protocol 2.0
-# This example is tested with two Dynamixel PRO 54-200, and an USB2DYNAMIXEL
-# Be sure that Dynamixel PRO properties are already set as %% ID : 1 / Baudnum : 1 (Baudrate : 57600)
-#
-
 import os
 from pickle import FALSE
 import numpy as np
@@ -64,7 +53,6 @@ LEN_PRO_PRESENT_POSITION    = 4
 # Protocol version
 PROTOCOL_VERSION            = 2.0               # See which protocol version is used in the Dynamixel
 
-
 TORQUE_ENABLE               = 1                 # Value for enabling the torque
 TORQUE_DISABLE              = 0                 # Value for disabling the torque
 DXL_MOVING_STATUS_THRESHOLD = 20                # Dynamixel moving status threshold
@@ -79,42 +67,6 @@ print("dxl_param reading success!")
 BAUDRATE                 = config_comport['RobotArm']['baudrate']  # Dynamixel default baudrate : 57600
 COMPORT                  = config_comport['RobotArm']['port']      # Check which port is being used on your controller
                                                                    # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
-
-
-dxl_param={
-    "profile":{
-        "acc":{
-            0:30,
-            1:15,
-            2:20,
-            3:20,
-            4:20,
-            5:10,
-            6:10,
-        },
-        "vel":{
-            0:200,
-            1:150,
-            2:160,
-            3:150,
-            4:150,
-            5:150,
-            6:150,
-        }
-    },
-    "home-position":{
-        0:  0,
-        1:-30,        
-        2:100,        
-        3:  0,        
-        4:  0,        
-        5:  0,        
-        6:  0,        
-    }
-}
-with open("dxl_param.txt", "w") as file:
-  file.write(str(dxl_param))
-print("success!")
 
 with open("dxl_param.txt", "r") as file:
   dxl_param=eval(file.readline())
@@ -140,20 +92,14 @@ print("map reading success!")
 dxl_goal_angle = dxl_param["home-position"]
 dxl_goal_position={}
 
-dxl_id_table =[0,1,2,3,4,5]
+dxl_id_table =[0,1,2,3,4,5,6]
 
 # Initialize PortHandler instance - Set the port path
-# Get methods and members of PortHandlerLinux or PortHandlerWindows
 portHandler = PortHandler(COMPORT)
-
 # Initialize PacketHandler instance - Set the protocol version
-# Get methods and members of Protocol1PacketHandler or Protocol2PacketHandler
 packetHandler = PacketHandler(PROTOCOL_VERSION)
-
-# Initialize GroupSyncWrite instance
+# Initialize GroupSync Read & Write instance
 groupSyncWrite = GroupSyncWrite(portHandler, packetHandler, ADDR_PRO_GOAL_POSITION, LEN_PRO_GOAL_POSITION)
-
-# Initialize GroupSyncRead instace for Present Position
 groupSyncRead = GroupSyncRead(portHandler, packetHandler, ADDR_PRO_PRESENT_POSITION, LEN_PRO_PRESENT_POSITION)
 
 # Open port
@@ -275,14 +221,10 @@ while 1:
 
     
     if b_newData == True:
-        # print("Press any key to continue! (or press ESC to quit!)")
-        # if getch() == chr(0x1b):
-        #     break
         # Change goal position
         dxl_goal_position=interp_maps(dxl_goal_angle,calib_map["angle"],calib_map["raw"],np.int32)
                         
         for i in dxl_id_table:
-            # dxl_goal_position[i]=dxl_position_range[i][index]
             # Allocate goal position value into byte array
             param_goal_position = [DXL_LOBYTE(DXL_LOWORD(dxl_goal_position[i])), DXL_HIBYTE(DXL_LOWORD(dxl_goal_position[i])), DXL_LOBYTE(DXL_HIWORD(dxl_goal_position[i])), DXL_HIBYTE(DXL_HIWORD(dxl_goal_position[i]))]
             
