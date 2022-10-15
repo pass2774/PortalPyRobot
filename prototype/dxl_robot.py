@@ -39,25 +39,21 @@ else:
 
 from dynamixel_sdk import *                    # Uses Dynamixel SDK library
 
+# Protocol version
+PROTOCOL_VERSION            = 2.0               # See which protocol version is used in the Dynamixel
 # Control table address
 ADDR_PRO_TORQUE_ENABLE      = 64               # Control table address is different in Dynamixel model
 ADDR_PRO_GOAL_POSITION      = 116
 ADDR_PRO_PRESENT_POSITION   = 132
 ADDR_PRO_PROFILE_ACC        = 108
 ADDR_PRO_PROFILE_VEL        = 112
-
 # Data Byte Length
 LEN_PRO_GOAL_POSITION       = 4
 LEN_PRO_PRESENT_POSITION    = 4
-
-# Protocol version
-PROTOCOL_VERSION            = 2.0               # See which protocol version is used in the Dynamixel
-
+# Data definition
 TORQUE_ENABLE               = 1                 # Value for enabling the torque
 TORQUE_DISABLE              = 0                 # Value for disabling the torque
 DXL_MOVING_STATUS_THRESHOLD = 20                # Dynamixel moving status threshold
-# DXL_PROFILE_ACC = 10
-# DXL_PROFILE_VEL = 100
 
 with open("config_comport.txt", "r") as file:
   config_comport=eval(file.readline())
@@ -110,7 +106,6 @@ else:
     print("Press any key to terminate...")
     getch()
     quit()
-
 
 # Set port baudrate
 if portHandler.setBaudRate(BAUDRATE):
@@ -254,6 +249,5 @@ for i in dxl_id_table:
     elif dxl_error != 0:
         print("%s" % packetHandler.getRxPacketError(dxl_error))
     
-
 # Close port
 portHandler.closePort()
