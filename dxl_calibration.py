@@ -62,9 +62,6 @@ print("dxl_param reading success!")
 BAUDRATE                 = config_comport['RobotArm']['baudrate']  # Dynamixel default baudrate : 57600
 COMPORT                  = config_comport['RobotArm']['port']      # Check which port is being used on your controller
                                                                    # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
-BUADRATE = 57600
-COMPORT = 'COM6'
-
 
 def interp_maps(x,map_x,map_y,dtype):
   y={}
@@ -88,10 +85,8 @@ portHandler = PortHandler(COMPORT)
 # Get methods and members of Protocol1PacketHandler or Protocol2PacketHandler
 packetHandler = PacketHandler(PROTOCOL_VERSION)
 
-# Initialize GroupSyncWrite instance
+# Initialize GroupSync Read & Write instance
 groupSyncWrite = GroupSyncWrite(portHandler, packetHandler, ADDR_PRO_GOAL_POSITION, LEN_PRO_GOAL_POSITION)
-
-# Initialize GroupSyncRead instace for Present Position
 groupSyncRead = GroupSyncRead(portHandler, packetHandler, ADDR_PRO_PRESENT_POSITION, LEN_PRO_PRESENT_POSITION)
 
 # Open port

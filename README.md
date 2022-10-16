@@ -12,9 +12,9 @@
     ```
     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
     ```
-* Method2: using pip
+* Method2: using pip(Raspberry PI)
     ```
-    poetry install --user poetry
+    pip install --user poetry
     ```
 -> 
 The path for 'poetry commands' is supposed to be automatically added to 'environment variable'. 
