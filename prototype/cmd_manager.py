@@ -55,9 +55,11 @@ def read_commandFile(b_print):
   for line in file.readlines():
     dict=eval(line)
     if b_print:
-      print('dict["idx"]-->',dict["idx"])
-      print('dict["arm"]-->',dict["arm"])
-      print('dict["gimbal"]-->',dict["gimbal"])  
+      # print('dict["idx"]-->',dict["idx"])
+      # print('dict["arm"]-->',dict["arm"])
+      # print('dict["gimbal"]-->',dict["gimbal"])  
+      # print('dict["gv"]-->',dict["gv"])  
+      print('cmd:',dict)  
   return dict
 
 def verify_commandRange(data_obj,rangeBook):
@@ -79,6 +81,7 @@ def update_commandFile(input_obj,b_print=True):
     dict_packet["idx"]=idx
     dict_packet["arm"]=eval(packet["arm"])
     dict_packet["gimbal"]=eval(packet["gimbal"])
+    dict_packet["gv"]=eval(packet["gv"])
     # Data range verification
     isCmdValid = verify_commandRange(dict_packet, valid_range)
 

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-# Copyright 2017 ROBOTIS CO., LTD.
+# Copyright 2022 PORTAL301 CO., LTD.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ else:
         return ch
 
 from dynamixel_sdk import *                    # Uses Dynamixel SDK library
+# relative file path
+__dirname__ =os.path.dirname(os.path.realpath(__file__))
 
 # Protocol version
 PROTOCOL_VERSION            = 2.0               # See which protocol version is used in the Dynamixel
@@ -65,7 +67,8 @@ POSITION_MODE               = 3
 EXTENDED_POSITITON_MODE     = 4
 PWM_MODE                    = 16
 
-with open("config_comport.txt", "r") as file:
+# with open("config_comport.txt", "r") as file:
+with open(os.path.join(__dirname__,"config_comport.txt"), "r") as file:
   config_comport=eval(file.readline())
 print("dxl_param reading success!")
 
@@ -88,9 +91,8 @@ def interp_maps(x,map_x,map_y,dtype):
       y[idx]=np.interp(-value,[-map_x[idx][0],-map_x[idx][1]],map_y[idx]).astype(dtype)
   return y
 
-#read the calibration map data
-__dirname__ =os.path.dirname(os.path.realpath(__file__))
 calib_map={}
+#read the calibration map data
 with open(os.path.join(__dirname__,"calibration","dxl_arm.txt"), "r") as file:
   calib_map["arm"]=eval(file.readline())
 with open(os.path.join(__dirname__,"calibration","dxl_gv.txt"), "r") as file:
@@ -98,11 +100,11 @@ with open(os.path.join(__dirname__,"calibration","dxl_gv.txt"), "r") as file:
 print("calibration map reading done!")
 
 # dxl_default_angle = {0:0,1:-50,2:130,3:0,4:0,5:0}
-dxl_goal_angle = dxl_param["home-position"]
+dxl_goal_arm = dxl_param["home-position"]
 dxl_goal_position={}
 
-# dxl_id_table =[0,1,2,3,4,5,6]
-dxl_id_table =[]
+dxl_id_arm =[0,1,2,3,4,5,6]
+# dxl_id_arm =[]
 dxl_id_gv =[21,22,23,24]
 
 # Initialize PortHandler instance - Set the port path
@@ -164,13 +166,18 @@ for i in dxl_id_gv:
         print("Dynamixel#%d has been successfully connected" % i)
 
 
-velmap={
-    'vel': {21: [-100, 100], 22: [-100, 100], 23: [-100, 100], 24: [-100, 100]},
-    'raw': {21: [-265, 265], 22: [265, -265], 23: [-265, 265], 24: [265, -265]},
-}
 command_idx=0
 # Setup
-for i in dxl_id_table:
+for i in dxl_id_arm:
+    # DISABLE Dynamixel#00i Torque
+    dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, i, ADDR_PRO_TORQUE_ENABLE, TORQUE_DISABLE)
+    if dxl_comm_result != COMM_SUCCESS:
+        print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+    elif dxl_error != 0:
+        print("%s" % packetHandler.getRxPacketError(dxl_error))
+    else:
+        print("Dynamixel#%d has been successfully connected" % i)
+
     # Enable Dynamixel#00i Torque
     dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, i, ADDR_PRO_TORQUE_ENABLE, TORQUE_ENABLE)
     if dxl_comm_result != COMM_SUCCESS:
@@ -200,55 +207,10 @@ for i in dxl_id_table:
         print("[ID:%03d] groupSyncRead addparam failed" % i)
         quit()
 
-
-    dxl_goal_position=interp_maps(dxl_goal_angle,calib_map["arm"]["angle"],calib_map["arm"]["raw"],np.int32)
-    # Set initial goal position
-    for i in dxl_id_table:
-
-        # Allocate goal position value into byte array
-        param_goal_position = [DXL_LOBYTE(DXL_LOWORD(dxl_goal_position[i])), DXL_HIBYTE(DXL_LOWORD(dxl_goal_position[i])), DXL_LOBYTE(DXL_HIWORD(dxl_goal_position[i])), DXL_HIBYTE(DXL_HIWORD(dxl_goal_position[i]))]
-        
-        # Add Dynamixel#00i goal position value to the Syncwrite parameter storage
-        dxl_addparam_result = groupSyncWritePos.addParam(i, param_goal_position)
-        if dxl_addparam_result != True:
-            print("[ID:%03d] groupSyncWrite addparam failed" % i)
-            quit()
-
-    # Syncwrite goal position
-    print("goal:", dxl_goal_position)
-    dxl_comm_result = groupSyncWritePos.txPacket()
-    if dxl_comm_result != COMM_SUCCESS:
-        print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-
-    # Clear syncwrite parameter storage
-    groupSyncWritePos.clearParam()
-
-#main loop
-while 1:
-    # Syncread present position
-    dxl_comm_result = groupSyncReadPos.txRxPacket()
-    if dxl_comm_result != COMM_SUCCESS:
-        print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-
-    dxl_present_position={}
-    isReached = True
-
-    for i in dxl_id_table:
-        # Check if groupsyncread data of Dynamixel#1 is available
-        dxl_getdata_result = groupSyncReadPos.isAvailable(i, ADDR_PRO_PRESENT_POSITION, LEN_PRO_PRESENT_POSITION)
-        if dxl_getdata_result != True:
-            print("[ID:%03d] groupSyncRead getdata failed" % i)
-            # quit()
-        # Get Dynamixel#00i present position value
-        dxl_present_position[i]=groupSyncReadPos.getData(i, ADDR_PRO_PRESENT_POSITION, LEN_PRO_PRESENT_POSITION)
-        # print("[ID:%03d] GoalPos:%03d PresPos:%03d\t" % (i, dxl_position_range[i][index], dxl_present_position[i]))
-        if (abs(dxl_present_position[i]-dxl_goal_position[i])) > DXL_MOVING_STATUS_THRESHOLD:
-            isReached = False
-    if not isReached:
-        print(dxl_present_position)
-    
+def read_cmd(latest_idx):
     file = open("output.txt", "r")
-    b_newData = False
+    b_update = False
+    dict={}
     while True:
         try:
             line = file.readline()
@@ -260,74 +222,102 @@ while 1:
             print("eval() error!")
 
         else:
-            if dict["idx"]>command_idx:
+            if dict["idx"]>latest_idx:
                 print(line)
-                command_idx=dict["idx"]
-                b_newData = True
-                dxl_goal_angle = dict["arm"]
-                gimbal_goal_position = dict["gimbal"]
-                # dxl_goal_velocity = dict["gv"]
-    
-    b_newData = True
+                latest_idx=dict["idx"]
+                b_update = True
+    return [b_update, latest_idx, dict]
+
+def dxl_SyncWrite(h_groupSyncWrite,dxl_Ids,target_state):
+    for i in dxl_Ids:
+        # Allocate goal position value into byte array
+        buffer = [DXL_LOBYTE(DXL_LOWORD(target_state[i])), DXL_HIBYTE(DXL_LOWORD(target_state[i])), DXL_LOBYTE(DXL_HIWORD(target_state[i])), DXL_HIBYTE(DXL_HIWORD(target_state[i]))]
+        # Add Dynamixel#00i goal position value to the Syncwrite parameter storage
+        dxl_addparam_result = h_groupSyncWrite.addParam(i, buffer)
+        if dxl_addparam_result != True:
+            print("[ID:%03d] groupSyncWrite addparam failed" % i)
+            quit()
+    # Syncwrite goal state
+    print("goal:", target_state)
+    dxl_comm_result = h_groupSyncWrite.txPacket()
+    if dxl_comm_result != COMM_SUCCESS:
+        print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+    # Clear syncwrite parameter storage
+    h_groupSyncWrite.clearParam()
+
+def dxl_ReadState(h_groupSyncRead,dxl_Ids,REG_ADDR,REG_LEN):
+    # Syncread present state
+    dxl_comm_result = h_groupSyncRead.txRxPacket()
+    if dxl_comm_result != COMM_SUCCESS:
+        print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+    dxl_current_state={}
+    for i in dxl_Ids:
+        # Check if groupsyncread data of Dynamixel#1 is available
+        dxl_getdata_result = h_groupSyncRead.isAvailable(i, REG_ADDR, REG_LEN)
+        if dxl_getdata_result != True:
+            print("[ID:%03d] groupSyncRead getdata failed" % i)
+            return [False, dxl_current_state]
+        # Get Dynamixel#00i present state value
+        dxl_current_state[i]=h_groupSyncRead.getData(i, REG_ADDR, REG_LEN)
+    return [True, dxl_current_state]
+
+def print_state(dxl_target_pos):
+    [isPosAvailable,dxl_current_pos]=dxl_ReadState(groupSyncReadPos,dxl_id_arm,ADDR_PRO_PRESENT_POSITION,LEN_PRO_PRESENT_POSITION)
+    # [isvelAvailable,dxl_current_vel]=dxl_ReadState(groupSyncReadVel,dxl_id_gv,ADDR_PRO_PRESENT_VELOCITY,LEN_PRO_PRESENT_VELOCITY)
+    time.sleep(1)
+    if isPosAvailable:
+        isReached = True
+        for i in dxl_id_arm:
+            if (abs(dxl_current_pos[i]-dxl_target_pos[i])) > DXL_MOVING_STATUS_THRESHOLD:
+                isReached = False
+        if not isReached:
+            print("current pos:",dxl_current_pos)
+
+# Set to default state
+dxl_goal_position=interp_maps(dxl_goal_arm,calib_map["arm"]["angle"],calib_map["arm"]["raw"],np.int32)
+dxl_SyncWrite(groupSyncWritePos,dxl_id_arm,dxl_goal_position)
+
+#main loop
+while 1:
+    print_state(dxl_goal_position)    
+    [b_newData,command_idx,cmd_obj]=read_cmd(command_idx)
     if b_newData == True:
-        # Change goal position
-        dxl_goal_position=interp_maps(dxl_goal_angle,calib_map["arm"]["angle"],calib_map["arm"]["raw"],np.int32)
+        # Update goal state
+        dxl_goal_position=interp_maps(cmd_obj["arm"],calib_map["arm"]["angle"],calib_map["arm"]["raw"],np.int32)
+        dxl_goal_velocity=interp_maps(cmd_obj["gv"],calib_map["gv"]["vel"],calib_map["gv"]["raw"],np.int32)
                         
-        for i in dxl_id_table:
-            # Allocate goal position value into byte array
-            param_goal_position = [DXL_LOBYTE(DXL_LOWORD(dxl_goal_position[i])), DXL_HIBYTE(DXL_LOWORD(dxl_goal_position[i])), DXL_LOBYTE(DXL_HIWORD(dxl_goal_position[i])), DXL_HIBYTE(DXL_HIWORD(dxl_goal_position[i]))]
+        # for i in dxl_id_arm:
+        #     # Allocate goal position value into byte array
+        #     param_goal_position = [DXL_LOBYTE(DXL_LOWORD(dxl_goal_position[i])), DXL_HIBYTE(DXL_LOWORD(dxl_goal_position[i])), DXL_LOBYTE(DXL_HIWORD(dxl_goal_position[i])), DXL_HIBYTE(DXL_HIWORD(dxl_goal_position[i]))]
             
-            # Add Dynamixel#00i goal position value to the Syncwrite parameter storage
-            dxl_addparam_result = groupSyncWritePos.addParam(i, param_goal_position)
-            if dxl_addparam_result != True:
-                print("[ID:%03d] groupSyncWrite addparam failed" % i)
-                quit()
+        #     # Add Dynamixel#00i goal position value to the Syncwrite parameter storage
+        #     dxl_addparam_result = groupSyncWritePos.addParam(i, param_goal_position)
+        #     if dxl_addparam_result != True:
+        #         print("[ID:%03d] groupSyncWrite addparam failed" % i)
+        #         quit()
 
-        # Syncwrite goal position
-        print("goal:", dxl_goal_position)
-        dxl_comm_result = groupSyncWritePos.txPacket()
-        if dxl_comm_result != COMM_SUCCESS:
-            print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+        # # Syncwrite goal position
+        # print("goal:", dxl_goal_position)
+        # dxl_comm_result = groupSyncWritePos.txPacket()
+        # if dxl_comm_result != COMM_SUCCESS:
+        #     print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
 
-        # Clear syncwrite parameter storage
-        groupSyncWritePos.clearParam()
+        # # Clear syncwrite parameter storage
+        # groupSyncWritePos.clearParam()
 
-
-        dxl_goal_velocity_raw = {21:0,22:0,23:0,24:0}
-        # dxl_goal_velocity_raw = {21:10,22:10,23:10,24:10}
-        # dxl_goal_velocity=interp_maps(dxl_goal_velocity_raw,velmap["vel"],velmap["raw"],np.int32)
-        dxl_goal_velocity=interp_maps(dxl_goal_velocity_raw,calib_map["gv"]["vel"],calib_map["gv"]["raw"],np.int32)
-
-        for i in dxl_id_gv:
-            # Allocate goal position value into byte array
-            param_goal_velocity = [DXL_LOBYTE(DXL_LOWORD(dxl_goal_velocity[i])), DXL_HIBYTE(DXL_LOWORD(dxl_goal_velocity[i])), DXL_LOBYTE(DXL_HIWORD(dxl_goal_velocity[i])), DXL_HIBYTE(DXL_HIWORD(dxl_goal_velocity[i]))]
-            
-            # Add Dynamixel#00i goal position value to the Syncwrite parameter storage
-            dxl_addparam_result = groupSyncWriteVel.addParam(i, param_goal_velocity)
-            if dxl_addparam_result != True:
-                print("[ID:%03d] groupSyncWrite addparam failed" % i)
-                quit()
-
-        time.sleep(1)
-        # Syncwrite goal state
-        print("goal:", dxl_goal_velocity)
-        dxl_comm_result = groupSyncWriteVel.txPacket()
-        if dxl_comm_result != COMM_SUCCESS:
-            print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-
-        # Clear syncwrite parameter storage
-        groupSyncWriteVel.clearParam()
+        dxl_SyncWrite(groupSyncWritePos,dxl_id_arm,dxl_goal_position)
+        dxl_SyncWrite(groupSyncWriteVel,dxl_id_gv,dxl_goal_velocity)
 
 # Clear syncread parameter storage
-# groupSyncReadPos.clearParam()
+groupSyncReadPos.clearParam()
 
-# for i in dxl_id_table:
-#     # Disable Dynamixel#00i Torque
-#     dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, i, ADDR_PRO_TORQUE_ENABLE, TORQUE_DISABLE)
-#     if dxl_comm_result != COMM_SUCCESS:
-#         print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-#     elif dxl_error != 0:
-#         print("%s" % packetHandler.getRxPacketError(dxl_error))
+for i in dxl_id_arm:
+    # Disable Dynamixel#00i Torque
+    dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, i, ADDR_PRO_TORQUE_ENABLE, TORQUE_DISABLE)
+    if dxl_comm_result != COMM_SUCCESS:
+        print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
+    elif dxl_error != 0:
+        print("%s" % packetHandler.getRxPacketError(dxl_error))
     
 # Close port
 portHandler.closePort()

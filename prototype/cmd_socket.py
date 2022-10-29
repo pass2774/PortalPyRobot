@@ -33,7 +33,7 @@ async def on_message(data):
 async def main():
     # await sio.connect('http://localhost:5000')
     # await sio.connect(url='https://api.portal301.com', transports = 'websocket')
-    await sio.connect(url='https://192.168.0.29:3333',transports='websocket')
+    await sio.connect(url='https://192.168.0.11:3333',transports='websocket')
     
     serviceProfile = {
         'socketId':sio.sid,
