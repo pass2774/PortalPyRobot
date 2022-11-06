@@ -45,6 +45,7 @@ else:
 from dynamixel_sdk import *                    # Uses Dynamixel SDK library
 # relative file path
 __dirname__ =os.path.dirname(os.path.realpath(__file__))
+__filename_command__ = os.path.join(__dirname__,"command.txt")
 
 with open(os.path.join(__dirname__,"config_comport.txt"), "r") as file:
   config_comport=eval(file.readline())
@@ -188,24 +189,15 @@ for i in dxl_id_arm:
         quit()
 
 def read_cmd(latest_idx):
-    file = open("output.txt", "r")
-    b_update = False
-    dict={}
-    while True:
-        try:
-            line = file.readline()
-            if not line:
-                break
-            dict=eval(line)
-
-        except:
-            print("eval() error!")
-
-        else:
-            if dict["idx"]>latest_idx:
-                print(line)
-                latest_idx=dict["idx"]
-                b_update = True
+    with open(__filename_command__, "r") as file:
+        dict = json.load(file)
+    # latest_idx=dict["idx"]
+    if dict["idx"]>latest_idx or dict["idx"]==0:
+        print(dict)
+        latest_idx=dict["idx"]
+        b_update = True
+    else:
+        b_update = False
     return [b_update, latest_idx, dict]
 
 def dxl_SyncWrite(h_groupSyncWrite,dxl_Ids,target_state):
@@ -239,7 +231,7 @@ def dxl_ReadState(h_groupSyncRead,dxl_Ids,REG_ADDR,REG_LEN):
             print("[ID:%03d] groupSyncRead getdata failed" % i)
             return [False, dxl_current_state]
         # Get Dynamixel#00i present state value
-        dxl_current_state[i]=h_groupSyncRead.getData(i, REG_ADDR, REG_LEN)
+        dxl_current_state[str(i)]=h_groupSyncRead.getData(i, REG_ADDR, REG_LEN)
     return [True, dxl_current_state]
 
 def print_state(dxl_target_pos):
@@ -248,7 +240,8 @@ def print_state(dxl_target_pos):
     # time.sleep(1)
     if isPosAvailable:
         isReached = True
-        for i in dxl_id_arm:
+        for id in dxl_id_arm:
+            i=str(id)
             if (abs(dxl_current_pos[i]-dxl_target_pos[i])) > DXL_MOVING_STATUS_THRESHOLD:
                 isReached = False
         if not isReached:
