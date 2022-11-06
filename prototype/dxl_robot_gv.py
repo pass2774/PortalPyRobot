@@ -18,6 +18,7 @@
 ################################################################################
 
 import os
+import json
 from pickle import FALSE
 import numpy as np
 import time
@@ -71,9 +72,11 @@ def interp_maps(x,map_x,map_y,dtype):
 calib_map={}
 #read the calibration map data
 with open(os.path.join(__dirname__,"calibration","dxl_arm.txt"), "r") as file:
-  calib_map["arm"]=eval(file.readline())
+  calib_map["arm"]=json.load(file)["arm"]
+#   calib_map["arm"]=eval(file.readline())
 with open(os.path.join(__dirname__,"calibration","dxl_gv.txt"), "r") as file:
-  calib_map["gv"]=eval(file.readline())
+  calib_map["gv"]=json.load(file)["gv"]
+#   calib_map["gv"]=eval(file.readline())
 print("calibration map reading done!")
 
 # dxl_default_angle = {0:0,1:-50,2:130,3:0,4:0,5:0}

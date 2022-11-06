@@ -32,16 +32,25 @@ async def disconnect():
     print("socket disconnected!")
 
 @sio.on('msg-v2')
-async def on_message(data):
-   cmd_manager.update_commandFile(str(data.get("message")))
+async def on_message(msg):
+    packet=json.loads(msg)
+    print("msg-v2(in):",packet)
+
+    if packet["type"] == "DUP":
+        cmd_manager.update_commandFile(packet["data"])
+    elif packet["type"] == "CONFIG":
+        cmd_manager.update_config(packet["data"])
+    else:
+        print("unclassifed packet received!:")
+        print(packet)
  
 
 async def main():
-    # await sio.connect(url='https://api.portal301.com', transports = 'websocket')
-    await sio.connect(url='https://192.168.0.11:3333',transports='websocket')
+    await sio.connect(url='https://api.portal301.com', transports = 'websocket')
+    # await sio.connect(url='https://192.168.0.11:3333',transports='websocket')
     
     with open(__filename_SP__, "r") as file:
-        serviceProfile=json.dump(file)
+        serviceProfile=json.load(file)
         serviceProfile['socketId']=sio.sid
         serviceProfile['room']='room:'+sio.sid
 

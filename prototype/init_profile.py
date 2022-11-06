@@ -12,7 +12,7 @@ __filename_SP__ = os.path.join(__dirname__,"config","ServiceProfile.txt")
 serviceProfile = {
     'sid':'',
     'type':'ROBOT',
-    'nickname':'',
+    'nickname':'RobotArm_0000',
     'description':'RobotArm',
     'contents':{'stream':['video'],'motor':['7-DOF robot arm', '4-DOF ground vehicle']},
     'owner':'PORTAL301',

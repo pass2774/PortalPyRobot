@@ -2,12 +2,44 @@
 # pip install "python-socketio[asyncio_client]==4.6.1"
 # ERR - socketio.exceptions.ConnectionError: OPEN packet not returned by server
 # Sol - https://stackoverflow.com/questions/66809068/python-socketio-open-packet-not-returned-by-the-server
+from time import time
+import json
+import os
+
+# relative file path
+__dirname__ = os.path.dirname(os.path.realpath(__file__))
+__filename_log_command__ = os.path.join(__dirname__,"log_command.txt")
+__filename_command__ = os.path.join(__dirname__,"command.txt")
+
+def static_vars(**kwargs):
+    def decorate(func):
+        for k in kwargs:
+            setattr(func, k, kwargs[k])
+        return func
+    return decorate
+
+@static_vars(mode=False)
+def setRecord(arg):
+    setRecord.mode = arg
+    print("record mode:",setRecord.mode)
+
+@static_vars(start=0)
+def timeStamp(arg):
+    timeStamp.start = arg
+    print("start time:",timeStamp.start)
+
+@static_vars(command=[])
+def logger(arg):
+    logger.command = arg
+    print("start time:",timeStamp.start)
+
 
 
 dxl_param={}
 with open("dxl_param.txt", "r") as file:
   dxl_param=eval(file.readline())
 print("dxl_param reading success!")
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -37,9 +69,9 @@ valid_range ={
   }
 }
 try:
-  file = open("output.txt", "x")
+  file = open(__filename_command__, "x")
 except:
-  print("command file(output.txt) already exists. continuing..")
+  print("command file(command.txt) already exists. continuing..")
 else:
   idx = 0
   arm = '{0:%d,1:%d,2:%d,3:%d,4:%d,5:%d,6:%d}' % (0,0,0,0,0,0,0)
@@ -51,15 +83,10 @@ else:
 
 
 def read_commandFile(b_print):
-  file = open("./output.txt", "r")
-  for line in file.readlines():
-    dict=eval(line)
-    if b_print:
-      # print('dict["idx"]-->',dict["idx"])
-      # print('dict["arm"]-->',dict["arm"])
-      # print('dict["gimbal"]-->',dict["gimbal"])  
-      # print('dict["gv"]-->',dict["gv"])  
-      print('cmd:',dict)  
+  with open(__filename_command__, "r") as file:
+    dict = json.load(file)
+  if b_print:
+    print('cmd:',dict)  
   return dict
 
 def verify_commandRange(data_obj,rangeBook):
@@ -72,30 +99,55 @@ def verify_commandRange(data_obj,rangeBook):
   return isCmdValid
 
 
+log_command = []
+
 def update_commandFile(input_obj,b_print=True):
     data_dict = read_commandFile(False)
     idx=data_dict["idx"]+1
-
-    packet=eval(input_obj)
-    dict_packet={}
+    dict_packet=input_obj
     dict_packet["idx"]=idx
-    dict_packet["arm"]=eval(packet["arm"])
-    dict_packet["gimbal"]=eval(packet["gimbal"])
-    dict_packet["gv"]=eval(packet["gv"])
+
     # Data range verification
-    isCmdValid = verify_commandRange(dict_packet, valid_range)
+    # isCmdValid = verify_commandRange(dict_packet, valid_range)
+    isCmdValid = True # Forced to be True during development
 
     # Update command file    
     if not isCmdValid:
         print('The input command is ignored.','(out of range error)')  
     else:
-        # str_cmd = '{"idx":%d,"arm":%s,"gimbal":%s}' % (idx,arm,gimbal)
-        str_cmd = str(dict_packet)
-        with open("output.txt", "w") as file:
-          file.write(str_cmd)
-        if b_print:
-          data_dict = read_commandFile(True)
-          
+      with open(__filename_command__, "w") as file:
+        json.dump(dict_packet,file,indent = 2)
+      if setRecord.mode == True:
+        log_command.append({"t0":time()-timeStamp.start,"data":input_obj})
+      if b_print:
+        data_dict = read_commandFile(True)
+      
+def update_config(packet):
+  if "record" in packet.keys():
+    if packet["record"]=="START":
+      timeStamp(time())
+      setRecord(True)
+      log_command.clear()
+    elif packet["record"]=="WRITE":
+      setRecord(False)
+      with open(__filename_log_command__, "w") as file:
+        json.dump(log_command,file,indent = 2)
+    elif packet["record"]=="APPEND":
+      setRecord(False)
+      print("Currently Not Available ")
+      # with open(__filename_log_command__, "a") as file:
+      #   file.write("")
+    elif packet["record"]=="DISCARD":
+      setRecord(False)
+    elif packet["record"]=="DELETE":
+      setRecord(False)
+      with open(__filename_log_command__, "w") as file:
+        file.write("")
+
+
+    
+
+
 def toHome():
   input_data_dict ={
   "arm":str(dxl_param["home-position"]), 
