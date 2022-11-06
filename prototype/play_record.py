@@ -24,9 +24,8 @@ import cmd_manager
 
 # relative file path
 __dirname__ = os.path.dirname(os.path.realpath(__file__))
-# __filename_log_command__ = os.path.join(__dirname__,"log_command.txt")
-__filename_log_command__ = os.path.join(__dirname__,"log_command_example.txt")
-__filename_command__ = os.path.join(__dirname__,"command.txt")
+__filename_log_command__ = os.path.join(__dirname__,"log_command.txt")
+# __filename_log_command__ = os.path.join(__dirname__,"log_command_example.txt")
 
 with open(__filename_log_command__, "r") as file:
     log_command = json.load(file)
@@ -41,7 +40,10 @@ while True:
             sleep(dt)
         command=queue["data"]
         print("time:",t0,"command:",command)
-        cmd_manager.update_commandFile(command)    
+        try:
+            cmd_manager.update_commandFile(command)
+        except:
+            pass    
     sleep(1)
 
 

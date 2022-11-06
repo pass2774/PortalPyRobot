@@ -189,15 +189,19 @@ for i in dxl_id_arm:
         quit()
 
 def read_cmd(latest_idx):
-    with open(__filename_command__, "r") as file:
-        dict = json.load(file)
-    # latest_idx=dict["idx"]
-    if dict["idx"]>latest_idx or dict["idx"]==0:
-        print(dict)
-        latest_idx=dict["idx"]
-        b_update = True
+    b_update = False
+    try:
+        with open(__filename_command__, "r") as file:
+            dict = json.load(file)
+        # latest_idx=dict["idx"]
+    except:
+        dict=[]
+        print("json loading failed")
     else:
-        b_update = False
+        if dict["idx"]>latest_idx or dict["idx"]==0:
+            print(dict)
+            latest_idx=dict["idx"]
+            b_update = True
     return [b_update, latest_idx, dict]
 
 def dxl_SyncWrite(h_groupSyncWrite,dxl_Ids,target_state):

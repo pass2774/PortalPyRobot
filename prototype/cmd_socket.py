@@ -33,9 +33,8 @@ async def disconnect():
 
 @sio.on('msg-v2')
 async def on_message(msg):
-    packet=json.loads(msg)
-    print("msg-v2(in):",packet)
-
+    print("msg-v2(in):",msg)
+    packet=json.loads(msg["message"])
     if packet["type"] == "DUP":
         cmd_manager.update_commandFile(packet["data"])
     elif packet["type"] == "CONFIG":
@@ -46,8 +45,8 @@ async def on_message(msg):
  
 
 async def main():
-    await sio.connect(url='https://api.portal301.com', transports = 'websocket')
-    # await sio.connect(url='https://192.168.0.11:3333',transports='websocket')
+    # await sio.connect(url='https://api.portal301.com', transports = 'websocket')
+    await sio.connect(url='https://192.168.0.11:3333',transports='websocket')
     
     with open(__filename_SP__, "r") as file:
         serviceProfile=json.load(file)
