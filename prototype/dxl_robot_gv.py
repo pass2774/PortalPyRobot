@@ -56,7 +56,7 @@ COMPORT                  = config_comport['RobotArm']['port']      # Check which
                                                                    # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 
 with open(os.path.join(__dirname__,"calibration","dxl_param.txt"), "r") as file:
-  dxl_param=eval(file.readline())
+  dxl_param=json.load(file)
 print("dxl_param reading success!")
     
 
@@ -72,10 +72,10 @@ def interp_maps(x,map_x,map_y,dtype):
 calib_map={}
 #read the calibration map data
 with open(os.path.join(__dirname__,"calibration","dxl_arm.txt"), "r") as file:
-  calib_map["arm"]=json.load(file)["arm"]
+  calib_map["arm"]=json.load(file)
 #   calib_map["arm"]=eval(file.readline())
 with open(os.path.join(__dirname__,"calibration","dxl_gv.txt"), "r") as file:
-  calib_map["gv"]=json.load(file)["gv"]
+  calib_map["gv"]=json.load(file)
 #   calib_map["gv"]=eval(file.readline())
 print("calibration map reading done!")
 
@@ -168,14 +168,14 @@ for i in dxl_id_arm:
         print("Dynamixel#%d has been successfully connected" % i)
 
     # Set profile acceleration
-    dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, i, ADDR_PRO_PROFILE_ACC, dxl_param["profile"]["acc"][i])
+    dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, i, ADDR_PRO_PROFILE_ACC, dxl_param["profile"]["acc"][str(i)])
     if dxl_comm_result != COMM_SUCCESS:
         print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
     elif dxl_error != 0:
         print("%s" % packetHandler.getRxPacketError(dxl_error))
 
     # Set profile velocity
-    dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, i, ADDR_PRO_PROFILE_VEL, dxl_param["profile"]["vel"][i])
+    dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, i, ADDR_PRO_PROFILE_VEL, dxl_param["profile"]["vel"][str(i)])
     if dxl_comm_result != COMM_SUCCESS:
         print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
     elif dxl_error != 0:
@@ -209,11 +209,12 @@ def read_cmd(latest_idx):
     return [b_update, latest_idx, dict]
 
 def dxl_SyncWrite(h_groupSyncWrite,dxl_Ids,target_state):
-    for i in dxl_Ids:
+    for id in dxl_Ids:
+        i=str(id)
         # Allocate goal position value into byte array
         buffer = [DXL_LOBYTE(DXL_LOWORD(target_state[i])), DXL_HIBYTE(DXL_LOWORD(target_state[i])), DXL_LOBYTE(DXL_HIWORD(target_state[i])), DXL_HIBYTE(DXL_HIWORD(target_state[i]))]
         # Add Dynamixel#00i goal position value to the Syncwrite parameter storage
-        dxl_addparam_result = h_groupSyncWrite.addParam(i, buffer)
+        dxl_addparam_result = h_groupSyncWrite.addParam(id, buffer)
         if dxl_addparam_result != True:
             print("[ID:%03d] groupSyncWrite addparam failed" % i)
             quit()
