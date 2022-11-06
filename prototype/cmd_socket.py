@@ -4,11 +4,17 @@
 # Sol - https://stackoverflow.com/questions/66809068/python-socketio-open-packet-not-returned-by-the-server
 import asyncio
 import socketio
-import time
+import os
 import json
 import cmd_manager
 
 # cmd_manager.toHome()
+
+# relative file path
+__dirname__ =os.path.dirname(os.path.realpath(__file__))
+__filename_SP__ = os.path.join(__dirname__,"config","ServiceProfile.txt")
+
+
 
 # sio = socketio.AsyncClient()
 sio = socketio.AsyncClient(engineio_logger=True,logger=True,ssl_verify=False)
@@ -31,17 +37,14 @@ async def on_message(data):
  
 
 async def main():
-    # await sio.connect('http://localhost:5000')
     # await sio.connect(url='https://api.portal301.com', transports = 'websocket')
     await sio.connect(url='https://192.168.0.11:3333',transports='websocket')
     
-    serviceProfile = {
-        'socketId':sio.sid,
-        'room':'room:'+sio.sid,
-        'type':'robot',
-        'description':'robot',
-        'contents':{'stream':'{video,audio}'}
-        }
+    with open(__filename_SP__, "r") as file:
+        serviceProfile=json.dump(file)
+        serviceProfile['socketId']=sio.sid
+        serviceProfile['room']='room:'+sio.sid
+
     await sio.emit('Start_Service', json.dumps(serviceProfile))
     # task = sio.start_background_task(my_background_task, 123)
     await sio.wait()
