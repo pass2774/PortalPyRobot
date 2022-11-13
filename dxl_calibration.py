@@ -13,6 +13,8 @@ import os
 from pickle import FALSE
 import numpy as np
 import time
+import json
+from dxl_registerMap import *
 
 if os.name == 'nt':
     import msvcrt
@@ -32,29 +34,12 @@ else:
 
 from dynamixel_sdk import *                    # Uses Dynamixel SDK library
 
-# Control table address
-ADDR_PRO_TORQUE_ENABLE      = 64               # Control table address is different in Dynamixel model
-ADDR_PRO_GOAL_POSITION      = 116
-ADDR_PRO_PRESENT_POSITION   = 132
-ADDR_PRO_PROFILE_ACC        = 108
-ADDR_PRO_PROFILE_VEL        = 112
+# relative file path
+__dirname__ =os.path.dirname(os.path.realpath(__file__))
 
-# Data Byte Length
-LEN_PRO_GOAL_POSITION       = 4
-LEN_PRO_PRESENT_POSITION    = 4
-
-# Protocol version
-PROTOCOL_VERSION            = 2.0               # See which protocol version is used in the Dynamixel
-
-
-TORQUE_ENABLE               = 1                 # Value for enabling the torque
-TORQUE_DISABLE              = 0                 # Value for disabling the torque
-DXL_MOVING_STATUS_THRESHOLD = 20                # Dynamixel moving status threshold
-DXL_PROFILE_ACC = 50
-DXL_PROFILE_VEL = 500
-
-
-with open("config_comport.txt", "r") as file:
+# with open("config_comport.txt", "r") as file:
+print(os.path.join(__dirname__,"config_comport.txt"))
+with open(os.path.join(__dirname__,"config_comport.txt"), "r") as file:
   config_comport=eval(file.readline())
 print("dxl_param reading success!")
 
@@ -76,13 +61,9 @@ def interp_maps(x,map_x,map_y,dtype):
 dxl_id_table =[0,1,2,3,4,5,6]
 
 # Initialize PortHandler instance
-# Set the port path
-# Get methods and members of PortHandlerLinux or PortHandlerWindows
 portHandler = PortHandler(COMPORT)
 
 # Initialize PacketHandler instance
-# Set the protocol version
-# Get methods and members of Protocol1PacketHandler or Protocol2PacketHandler
 packetHandler = PacketHandler(PROTOCOL_VERSION)
 
 # Initialize GroupSync Read & Write instance
@@ -121,20 +102,6 @@ for i in dxl_id_table:
         print("%s" % packetHandler.getRxPacketError(dxl_error))
     else:
         print("Dynamixel#%d has been successfully connected" % i)
-
-    # Set profile acceleration
-    dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, i, ADDR_PRO_PROFILE_ACC, DXL_PROFILE_ACC)
-    if dxl_comm_result != COMM_SUCCESS:
-        print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-    elif dxl_error != 0:
-        print("%s" % packetHandler.getRxPacketError(dxl_error))
-
-    # Set profile velocity
-    dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, i, ADDR_PRO_PROFILE_VEL, DXL_PROFILE_VEL)
-    if dxl_comm_result != COMM_SUCCESS:
-        print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
-    elif dxl_error != 0:
-        print("%s" % packetHandler.getRxPacketError(dxl_error))
     
     # Add parameter storage for Dynamixel#00i present position value
     dxl_addparam_result = groupSyncRead.addParam(i)
@@ -196,8 +163,6 @@ calib_pos_angle={
   5:[-90, 90],
   6:[  0, 90],
 }
-with open("dxl_calibration_angle.txt", "w") as file:
-  file.write(str(calib_pos_angle))
 
 def setCalibMap():
   range_map={"angle":{}, "raw":{}}
@@ -224,8 +189,10 @@ def setCalibMap():
 get_calib_pos()
 print("Calibration successfully finished.")
 calib_map=setCalibMap()
-with open("dxl_calibration.txt", "w") as file:
-  file.write(str(calib_map))
+
+with open(os.path.join(__dirname__,"calibration","dxl_arm.txt"), "w") as file:
+  json.dump(calib_map,file,indent=4)
+  # file.write(str(calib_map))
 print("success!")
     
 # Close port
