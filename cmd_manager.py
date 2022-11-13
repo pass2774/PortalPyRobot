@@ -10,7 +10,7 @@ import os
 __dirname__ = os.path.dirname(os.path.realpath(__file__))
 __filename_log_command__ = os.path.join(__dirname__,"log_command.txt")
 __filename_command__ = os.path.join(__dirname__,"command.txt")
-__filename_dxl_param__ = os.path.join(__dirname__,"calibration","dxl_param.txt")
+__filename_dxl_param__ = os.path.join(__dirname__,"src","calibration","dxl_param.txt")
 
 def static_vars(**kwargs):
     def decorate(func):
@@ -37,7 +37,7 @@ def logger(arg):
 
 
 dxl_param={}
-with open(os.path.join(__dirname__,"calibration","dxl_param.txt"), "r") as file:
+with open((__filename_dxl_param__), "r") as file:
   dxl_param=json.load(file)
 print("dxl_param reading success!")
 

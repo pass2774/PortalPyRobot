@@ -12,7 +12,7 @@ import cmd_manager
 
 # relative file path
 __dirname__ =os.path.dirname(os.path.realpath(__file__))
-__filename_SP__ = os.path.join(__dirname__,"config","ServiceProfile.txt")
+__filename_SP__ = os.path.join(__dirname__,"src","config","ServiceProfile.txt")
 
 
 
