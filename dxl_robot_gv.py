@@ -17,6 +17,11 @@
 # limitations under the License.
 ################################################################################
 
+#stderr do not use buffering, but stdout use buffering.
+#Therefore, we need to set flush=True to 'pipe' stdout from external program.
+import functools
+print = functools.partial(print, flush=True) 
+
 import os
 import sys
 import json

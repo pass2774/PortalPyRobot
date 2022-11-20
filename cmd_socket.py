@@ -2,6 +2,10 @@
 # pip install "python-socketio[asyncio_client]==4.6.1"
 # ERR - socketio.exceptions.ConnectionError: OPEN packet not returned by server
 # Sol - https://stackoverflow.com/questions/66809068/python-socketio-open-packet-not-returned-by-the-server
+
+import functools
+print = functools.partial(print, flush=True)
+
 import asyncio
 import socketio
 import os
@@ -33,20 +37,20 @@ async def disconnect():
 
 @sio.on('msg-v2')
 async def on_message(msg):
-    print("msg-v2(in):",msg,file=sys.stderr)
+    print("msg-v2(in):",msg)
     packet=json.loads(msg["message"])
-    if packet["type"] == "DUP":
-        cmd_manager.update_commandFile(packet["data"])
-    elif packet["type"] == "CONFIG":
-        cmd_manager.update_config(packet["data"])
-    else:
-        print("unclassifed packet received!:")
-        print(packet)
+    # if packet["type"] == "DUP":
+    #     cmd_manager.update_commandFile(packet["data"])
+    # elif packet["type"] == "CONFIG":
+    #     cmd_manager.update_config(packet["data"])
+    # else:
+    #     print("unclassifed packet received!:")
+    #     print(packet)
  
 
 async def main():
-    # await sio.connect(url='https://api.portal301.com', transports = 'websocket')
-    await sio.connect(url='https://192.168.0.11:3333',transports='websocket')
+    await sio.connect(url='https://api.portal301.com', transports = 'websocket')
+    # await sio.connect(url='https://192.168.0.11:3333',transports='websocket')
     
     with open(__filename_SP__, "r") as file:
         serviceProfile=json.load(file)

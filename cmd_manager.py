@@ -2,6 +2,8 @@
 # pip install "python-socketio[asyncio_client]==4.6.1"
 # ERR - socketio.exceptions.ConnectionError: OPEN packet not returned by server
 # Sol - https://stackoverflow.com/questions/66809068/python-socketio-open-packet-not-returned-by-the-server
+import functools
+print = functools.partial(print, flush=True)
 from time import time
 import json
 import os
