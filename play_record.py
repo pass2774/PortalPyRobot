@@ -33,6 +33,12 @@ with open(__filename_log_command__, "r") as file:
 while True:
     start_time= time()
     print("starting time:", start_time-time())
+    # command=log_command[0]["data"]
+    # try:
+    #     cmd_manager.update_commandFile(command)
+    # except:
+    #     pass    
+    sleep(5)
     for queue in log_command:
         t0=queue["t0"]
         dt=t0+start_time-time()
@@ -43,7 +49,6 @@ while True:
         try:
             cmd_manager.update_commandFile(command)
         except:
-            pass    
-    sleep(1)
+            pass
 
 

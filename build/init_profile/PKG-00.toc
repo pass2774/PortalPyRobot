@@ -35,7 +35,7 @@
    'C:\\Users\\Portal301\\Dropbox\\PythonWorkspace\\Portal301Projects\\RobotArm\\.venv\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks\\pyi_rth_subprocess.py',
    'PYSOURCE'),
   ('init_profile',
-   'C:\\Users\\Portal301\\Dropbox\\PythonWorkspace\\Portal301Projects\\RobotArm\\prototype\\init_profile.py',
+   'C:\\Users\\Portal301\\Dropbox\\PythonWorkspace\\Portal301Projects\\RobotArm\\init_profile.py',
    'PYSOURCE')],
  True,
  False,

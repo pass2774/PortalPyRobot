@@ -1,0 +1,19 @@
+{
+    "sid": "PORTAL301/ROBOT-0000-QY2B-7Q4U-YAOU-E873",
+    "type": "ROBOT",
+    "nickname": "RobotArm_0000",
+    "description": "RobotArm",
+    "contents": {
+        "stream": [
+            "video"
+        ],
+        "motor": [
+            "7-DOF robot arm",
+            "4-DOF ground vehicle"
+        ]
+    },
+    "owner": "PORTAL301",
+    "state": {
+        "socketId": "----"
+    }
+}

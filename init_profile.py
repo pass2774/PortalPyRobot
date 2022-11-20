@@ -5,8 +5,8 @@ import string
 
 # relative file path
 __dirname__ =os.path.dirname(os.path.realpath(__file__))
-__filename_SN__ = os.path.join(__dirname__,"config","SerialNumber.txt")
-__filename_SP__ = os.path.join(__dirname__,"config","ServiceProfile.txt")
+__filename_SN__ = os.path.join(__dirname__,"src","config","SerialNumber.txt")
+__filename_SP__ = os.path.join(__dirname__,"src","config","ServiceProfile.txt")
 
 
 serviceProfile = {
@@ -22,7 +22,7 @@ serviceProfile = {
 if os.path.isfile(__filename_SN__):
     with open(__filename_SN__, "r") as file:
         SerialNumber=file.readline()
-        print("Serial number is already exist:", SerialNumber)
+        print("Serial number already exists:", SerialNumber)
 else:
     with open(__filename_SN__, "w") as file:
         #generate random serial number length with uppser-case letters and digits

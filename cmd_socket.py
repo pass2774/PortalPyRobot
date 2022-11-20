@@ -7,8 +7,7 @@ import socketio
 import os
 import json
 import cmd_manager
-
-# cmd_manager.toHome()
+import sys
 
 # relative file path
 __dirname__ =os.path.dirname(os.path.realpath(__file__))
@@ -29,11 +28,12 @@ async def connect():
 
 @sio.event
 async def disconnect():
+    cmd_manager.toHome()
     print("socket disconnected!")
 
 @sio.on('msg-v2')
 async def on_message(msg):
-    print("msg-v2(in):",msg)
+    print("msg-v2(in):",msg,file=sys.stderr)
     packet=json.loads(msg["message"])
     if packet["type"] == "DUP":
         cmd_manager.update_commandFile(packet["data"])
@@ -45,14 +45,15 @@ async def on_message(msg):
  
 
 async def main():
-    await sio.connect(url='https://api.portal301.com', transports = 'websocket')
-    # await sio.connect(url='https://192.168.0.11:3333',transports='websocket')
+    # await sio.connect(url='https://api.portal301.com', transports = 'websocket')
+    await sio.connect(url='https://192.168.0.11:3333',transports='websocket')
     
     with open(__filename_SP__, "r") as file:
         serviceProfile=json.load(file)
+        serviceProfile['sid']=sio.sid
         serviceProfile['socketId']=sio.sid
         serviceProfile['room']='room:'+sio.sid
-
+        serviceProfile['state']={'socketId':sio.sid,'roomId':'room:'+sio.sid}
     await sio.emit('Start_Service', json.dumps(serviceProfile))
     # task = sio.start_background_task(my_background_task, 123)
     await sio.wait()

@@ -10,10 +10,12 @@
 
 
 import os
+import sys
 from pickle import FALSE
 import numpy as np
 import time
 import json
+sys.path.append("./src")
 from dxl_registerMap import *
 
 if os.name == 'nt':
@@ -36,10 +38,10 @@ from dynamixel_sdk import *                    # Uses Dynamixel SDK library
 
 # relative file path
 __dirname__ =os.path.dirname(os.path.realpath(__file__))
+__filename_calibration_dxl_arm__ = os.path.join(__dirname__,"src","calibration","dxl_arm.txt")
 
 # with open("config_comport.txt", "r") as file:
-print(os.path.join(__dirname__,"config_comport.txt"))
-with open(os.path.join(__dirname__,"config_comport.txt"), "r") as file:
+with open(os.path.join(__dirname__,"src","config","Comport.txt"), "r") as file:
   config_comport=eval(file.readline())
 print("dxl_param reading success!")
 
@@ -132,10 +134,10 @@ calib_guide={
   2:"Arm: reversed right angle & End-effecter: straight",
   3:"Arm: reversed right angle & End-effecter: backward right angle(adjust M4)",
   4:"Arm: reversed right angle & End-effecter: forward right angle(adjust M4)",
-  5:"Arm: reversed right angle & End-effecter: 90 deg leftward(adjust M3)",
-  6:"Arm: reversed right angle & End-effecter: 90 deg rightward(adjust M3)",
-  7:"Arm: reversed right angle & End-effecter: 90 deg leftward rolling(adjust M5)",
-  8:"Arm: reversed right angle & End-effecter: 90 deg rightward rolling(adjust M5)",
+  5:"Arm: reversed right angle & End-effecter: 180 deg leftward(adjust M3)",
+  6:"Arm: reversed right angle & End-effecter: 180 deg rightward(adjust M3)",
+  7:"Arm: reversed right angle & End-effecter: 270 deg leftward rolling(adjust M5)",
+  8:"Arm: reversed right angle & End-effecter: 270 deg rightward rolling(adjust M5)",
   9:"End-effecter: grip-state",
   10:"End-effecter: release-state",
 }
@@ -158,9 +160,9 @@ calib_pos_angle={
   0:[-90, 90],
   1:[-90, 90],
   2:[-90,137],
-  3:[-90, 90],
+  3:[-270,270],
   4:[-90, 90],
-  5:[-90, 90],
+  5:[-270, 270],
   6:[  0, 90],
 }
 
@@ -190,7 +192,7 @@ get_calib_pos()
 print("Calibration successfully finished.")
 calib_map=setCalibMap()
 
-with open(os.path.join(__dirname__,"calibration","dxl_arm.txt"), "w") as file:
+with open(__filename_calibration_dxl_arm__, "w") as file:
   json.dump(calib_map,file,indent=4)
   # file.write(str(calib_map))
 print("success!")

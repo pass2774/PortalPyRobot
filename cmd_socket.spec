@@ -9,10 +9,10 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=[
-        ('./calibration/*','./calibration'),
-        ('./config/*','./config')
-    ],
-    hiddenimports=[],
+        ('./src/calibration/*','./src/calibration'),
+        ('./src/config/*','./src/config'),
+        ('./*','./')
+    ],    hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

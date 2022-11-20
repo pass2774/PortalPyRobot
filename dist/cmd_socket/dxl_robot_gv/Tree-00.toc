@@ -1,0 +1,5 @@
+('c:\\users\\portal301\\dropbox\\pythonworkspace\\portal301projects\\robotarm\\.venv\\lib\\site-packages\\pyserial-3.5-py3.10.egg',
+ None,
+ {'*.pyc', '*.pyd', '*.pyw', 'EGG-INFO', '*.cp310-win_amd64.pyd', '*.py'},
+ 'DATA',
+ [])

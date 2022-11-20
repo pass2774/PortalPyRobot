@@ -124,6 +124,14 @@ def update_commandFile(input_obj,b_print=True):
         data_dict = read_commandFile(True)
       
 def update_config(packet):
+  if "operation" in packet.keys():
+    if packet["operation"]=="CALIBRATION":
+      pass
+    elif packet["operation"]=="HOME_CALIBRATION":
+      pass
+    elif packet["operation"]=="TORQUE_OFF":
+      pass
+
   if "record" in packet.keys():
     if packet["record"]=="START":
       timeStamp(time())
@@ -151,7 +159,8 @@ def update_config(packet):
 
 def toHome():
   input_data_dict ={
-  "arm":str(dxl_param["home-position"]), 
-  "gimbal":'{0:%d,1:%d,2:%d}' % (0,0,0),
+    "arm":dxl_param["home-position"], 
+    "gimbal":{0:0,1:0,2:0},
+    "gv":{21:0,22:0,23:0,24:0}
   }
-  update_commandFile(str(input_data_dict))
+  update_commandFile(input_data_dict)

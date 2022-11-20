@@ -18,10 +18,12 @@
 ################################################################################
 
 import os
+import sys
 import json
 from pickle import FALSE
 import numpy as np
 import time
+sys.path.append("./src")
 from dxl_registerMap import *
 
 
@@ -46,8 +48,9 @@ from dynamixel_sdk import *                    # Uses Dynamixel SDK library
 # relative file path
 __dirname__ =os.path.dirname(os.path.realpath(__file__))
 __filename_command__ = os.path.join(__dirname__,"command.txt")
+__filename_flag__ = os.path.join(__dirname__,"flag.txt")
 
-with open(os.path.join(__dirname__,"config_comport.txt"), "r") as file:
+with open(os.path.join(__dirname__,"src","config","Comport.txt"), "r") as file:
   config_comport=eval(file.readline())
 print("dxl_param reading success!")
 
@@ -56,7 +59,7 @@ BAUDRATE                 = config_comport['RobotArm']['baudrate']  # Dynamixel d
 COMPORT                  = config_comport['RobotArm']['port']      # Check which port is being used on your controller
                                                                    # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 
-with open(os.path.join(__dirname__,"calibration","dxl_param.txt"), "r") as file:
+with open(os.path.join(__dirname__,"src","calibration","dxl_param.txt"), "r") as file:
   dxl_param=json.load(file)
 print("dxl_param reading success!")
     
@@ -72,16 +75,17 @@ def interp_maps(x,map_x,map_y,dtype):
 
 calib_map={}
 #read the calibration map data
-with open(os.path.join(__dirname__,"calibration","dxl_arm.txt"), "r") as file:
+with open(os.path.join(__dirname__,"src","calibration","dxl_arm.txt"), "r") as file:
   calib_map["arm"]=json.load(file)
 #   calib_map["arm"]=eval(file.readline())
-with open(os.path.join(__dirname__,"calibration","dxl_gv.txt"), "r") as file:
+with open(os.path.join(__dirname__,"src","calibration","dxl_gv.txt"), "r") as file:
   calib_map["gv"]=json.load(file)
 #   calib_map["gv"]=eval(file.readline())
 print("calibration map reading done!")
 
 # dxl_default_angle = {0:0,1:-50,2:130,3:0,4:0,5:0}
-dxl_goal_arm = dxl_param["home-position"]
+home_position = dxl_param["home-position"]
+dxl_goal_arm = home_position
 dxl_goal_position={}
 
 dxl_id_arm =[0,1,2,3,4,5,6]
@@ -196,13 +200,26 @@ def read_cmd(latest_idx):
         # latest_idx=dict["idx"]
     except:
         dict=[]
-        print("json loading failed")
+        print("read_cmd:json loading failed")
     else:
         if dict["idx"]>latest_idx or dict["idx"]==0:
             print(dict)
             latest_idx=dict["idx"]
             b_update = True
     return [b_update, latest_idx, dict]
+
+def check_exit():
+    # try:
+    #     with open(__filename_flag__, "r") as file:
+    #         dict = json.load(file)
+    # except:
+    #     dict=[]
+    #     print("check_exit: json loading failed")
+    # else:
+    #     if dict["MODE"]!="NORMAL":
+    #         print(dict)
+    #         return True
+    return False
 
 def dxl_SyncWrite(h_groupSyncWrite,dxl_Ids,target_state):
     for id in dxl_Ids:
@@ -252,8 +269,9 @@ def print_state(dxl_target_pos):
             print("current pos:",dxl_current_pos)
 
 # Set to default state
-dxl_goal_position=interp_maps(dxl_goal_arm,calib_map["arm"]["angle"],calib_map["arm"]["raw"],np.int32)
+dxl_goal_position=interp_maps(home_position,calib_map["arm"]["angle"],calib_map["arm"]["raw"],np.int32)
 dxl_SyncWrite(groupSyncWritePos,dxl_id_arm,dxl_goal_position)
+
 
 #main loop
 while 1:
@@ -267,16 +285,20 @@ while 1:
         dxl_SyncWrite(groupSyncWritePos,dxl_id_arm,dxl_goal_position)
         dxl_SyncWrite(groupSyncWriteVel,dxl_id_gv,dxl_goal_velocity)
 
-# Clear syncread parameter storage
-groupSyncReadPos.clearParam()
+    
+    # if check_exit() == True:
+    #     dxl_goal_position=interp_maps(home_position,calib_map["arm"]["angle"],calib_map["arm"]["raw"],np.int32)
+    #     dxl_SyncWrite(groupSyncWritePos,dxl_id_arm,dxl_goal_position)
+    #     time.sleep(5)
+    #     break
 
 for i in dxl_id_arm:
-    # Disable Dynamixel#00i Torque
+    # DISABLE Dynamixel#00i Torque
     dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, i, ADDR_PRO_TORQUE_ENABLE, TORQUE_DISABLE)
     if dxl_comm_result != COMM_SUCCESS:
         print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
     elif dxl_error != 0:
         print("%s" % packetHandler.getRxPacketError(dxl_error))
-    
 # Close port
 portHandler.closePort()
+print("Motor torque disabled. Robot operation terminated.")
