@@ -60,8 +60,8 @@ with open(os.path.join(__dirname__,"src","config","Comport.txt"), "r") as file:
 print("dxl_param reading success!")
 
 # Comport Settings
-BAUDRATE                 = config_comport['RobotArm']['baudrate']  # Dynamixel default baudrate : 57600
-COMPORT                  = config_comport['RobotArm']['port']      # Check which port is being used on your controller
+BAUDRATE                 = config_comport['dxlCh0']['baudrate']  # Dynamixel default baudrate : 57600
+COMPORT                  = config_comport['dxlCh0']['port']      # Check which port is being used on your controller
                                                                    # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
 
 with open(os.path.join(__dirname__,"src","calibration","dxl_param.txt"), "r") as file:
@@ -274,7 +274,7 @@ def print_state(dxl_target_pos):
             print("current pos:",dxl_current_pos)
 
 # Set to default state
-dxl_goal_position=interp_maps(home_position,calib_map["arm"]["angle"],calib_map["arm"]["raw"],np.int32)
+dxl_goal_position=interp_maps(home_position,calib_map["arm"]["pos"],calib_map["arm"]["raw"],np.int32)
 dxl_SyncWrite(groupSyncWritePos,dxl_id_arm,dxl_goal_position)
 
 
@@ -284,7 +284,7 @@ while 1:
     [b_newData,command_idx,cmd_obj]=read_cmd(command_idx)
     if b_newData == True:
         # update target-state
-        dxl_goal_position=interp_maps(cmd_obj["arm"],calib_map["arm"]["angle"],calib_map["arm"]["raw"],np.int32)
+        dxl_goal_position=interp_maps(cmd_obj["arm"],calib_map["arm"]["pos"],calib_map["arm"]["raw"],np.int32)
         dxl_goal_velocity=interp_maps(cmd_obj["gv"],calib_map["gv"]["vel"],calib_map["gv"]["raw"],np.int32)
         # write to dxl
         dxl_SyncWrite(groupSyncWritePos,dxl_id_arm,dxl_goal_position)
@@ -292,7 +292,7 @@ while 1:
 
     
     # if check_exit() == True:
-    #     dxl_goal_position=interp_maps(home_position,calib_map["arm"]["angle"],calib_map["arm"]["raw"],np.int32)
+    #     dxl_goal_position=interp_maps(home_position,calib_map["arm"]["pos"],calib_map["arm"]["raw"],np.int32)
     #     dxl_SyncWrite(groupSyncWritePos,dxl_id_arm,dxl_goal_position)
     #     time.sleep(5)
     #     break

@@ -39,13 +39,15 @@ async def disconnect():
 async def on_message(msg):
     print("msg-v2(in):",msg)
     packet=json.loads(msg["message"])
-    # if packet["type"] == "DUP":
-    #     cmd_manager.update_commandFile(packet["data"])
-    # elif packet["type"] == "CONFIG":
-    #     cmd_manager.update_config(packet["data"])
-    # else:
-    #     print("unclassifed packet received!:")
-    #     print(packet)
+    if packet["type"] == "DUP":
+        cmd_manager.update_commandFile(packet["data"])
+    elif packet["type"] == "CONFIG":
+        cmd_manager.update_config(packet["data"])
+    elif packet["type"] == "SIG":
+        print("SIG:",packet["data"])
+    else:
+        print("unclassifed packet received!:")
+        print(packet)
  
 
 async def main():

@@ -89,7 +89,7 @@ def read_commandFile(b_print):
   with open(__filename_command__, "r") as file:
     dict = json.load(file)
   if b_print:
-    print('cmd:',dict)  
+    print('cmd:',json.dumps(dict))  
   return dict
 
 def verify_commandRange(data_obj,rangeBook):
