@@ -1,5 +1,0 @@
-('C:\\Users\\Portal301\\Dropbox\\PythonWorkspace\\Portal301Projects\\RobotArm\\build\\dxl_robot_gv\\dynamixel_sdk-3.7.31-py3.10.egg',
- None,
- {'*.pyc', '*.pyd', '*.pyw', 'EGG-INFO', '*.cp310-win_amd64.pyd', '*.py'},
- 'DATA',
- [])

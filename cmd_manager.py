@@ -7,9 +7,14 @@ print = functools.partial(print, flush=True)
 from time import time
 import json
 import os
+import sys
 
 # relative file path
-__dirname__ = os.path.dirname(os.path.realpath(__file__))
+if getattr(sys, 'frozen', False):
+    __dirname__ =os.path.join(sys._MEIPASS,"..","..") # runned as a .exe file
+else:
+    __dirname__ =os.path.dirname(os.path.realpath(__file__)) # runned as a .py file
+
 __filename_log_command__ = os.path.join(__dirname__,"log_command.txt")
 __filename_command__ = os.path.join(__dirname__,"command.txt")
 __filename_dxl_param__ = os.path.join(__dirname__,"src","calibration","dxl_param.txt")

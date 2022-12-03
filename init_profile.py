@@ -1,16 +1,23 @@
+import sys
 import os
 import json
 import random
 import string
 
 # relative file path
-__dirname__ =os.path.dirname(os.path.realpath(__file__))
+if getattr(sys, 'frozen', False):
+    __dirname__ =os.path.join(sys._MEIPASS,"..","..") # runned as a .exe file
+else:
+    __dirname__ =os.path.dirname(os.path.realpath(__file__)) # runned as a .py file
+
 __filename_SN__ = os.path.join(__dirname__,"src","config","SerialNumber.txt")
 __filename_SP__ = os.path.join(__dirname__,"src","config","ServiceProfile.txt")
 
 
+
 serviceProfile = {
     'sid':'',
+    'spw':'0000',
     'type':'ROBOT',
     'nickname':'RobotArm_0000',
     'description':'RobotArm',
@@ -18,6 +25,22 @@ serviceProfile = {
     'owner':'PORTAL301',
     'state':{'socketId':'----'},
 }
+
+serviceProfile2 = {
+    "sid":"",
+    "spw":"0000",
+    "type":"ROBOT",
+    "nickname":"RobotArm_0000",
+    "description":"RobotArm",
+    "owner":"PORTAL301",
+    "contents":{"ch0":['stream'],"ch1":['7-DOF robot arm', '4-DOF ground vehicle']},
+    "state":{
+        "ch0":{"class":"MECH","contents":["7-DOF robot arm", "4-DOF ground vehicle"],"socketId":"----","roomId":"----"},
+        "ch1":{"class":"MEDIA","contents":["video"],"socketId":"----","roomId":"----"}
+        },
+}
+
+
 
 if os.path.isfile(__filename_SN__):
     with open(__filename_SN__, "r") as file:

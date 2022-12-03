@@ -51,20 +51,12 @@ else:
 
 from dynamixel_sdk import *                    # Uses Dynamixel SDK library
 # relative file path
-if getattr(sys, 'frozen', False):
-    __dirname__ =os.path.join(sys._MEIPASS,"..","..") # runned as a .exe file
-else:
-    __dirname__ =os.path.dirname(os.path.realpath(__file__)) # runned as a .py file
-    
+__dirname__ =os.path.dirname(os.path.realpath(__file__))
 __filename_command__ = os.path.join(__dirname__,"command.txt")
 __filename_flag__ = os.path.join(__dirname__,"flag.txt")
-__filename_Comport__ = os.path.join(__dirname__,"src","config","Comport.txt")
 
-# with open(os.path.join(__dirname__,"src","config","Comport.txt"), "r") as file:
-#   config_comport=eval(file.readline())
-
-with open(__filename_Comport__, "r") as file:
-  config_comport=json.load(file)
+with open(os.path.join(__dirname__,"src","config","Comport.txt"), "r") as file:
+  config_comport=eval(file.readline())
 print("dxl_param reading success!")
 
 # Comport Settings

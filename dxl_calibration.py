@@ -36,13 +36,15 @@ else:
 
 from dynamixel_sdk import *                    # Uses Dynamixel SDK library
 
+_availableRobotClass = ["robotArm","plantWatcher"]
+
 if len(sys.argv) < 2 :
   print("INPUT ERROR: Input _robotClass")
   quit()
-elif not sys.argv[1] in ["robotArm", "plantWatcher"]:
+elif not sys.argv[1] in _availableRobotClass:
   print("INPUT ERROR: Wrong input.")
-  print("Available Option ->")
-  print(["robotArm", "plantWatcher"])
+  print("Available robotClass ->")
+  print(_availableRobotClass)
   quit()
 
 _robotClass = sys.argv[1]
@@ -82,25 +84,6 @@ else:
     print("Failed to change the baudrate")
     quit()
 
-
-
-# Setup
-# for i in dxl_id_table:
-#     # Disable Dynamixel#00i Torque
-#     dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, i, ADDR_PRO_TORQUE_ENABLE, TORQUE_DISABLE)
-#     if dxl_comm_result != COMM_SUCCESS:
-#         print("Dynamixel", i, ":", packetHandler.getTxRxResult(dxl_comm_result))
-#     elif dxl_error != 0:
-#         print("Dynamixel", i, ":", packetHandler.getRxPacketError(dxl_error))
-#     else:
-#         print("Dynamixel#%d has been successfully connected" % i)
-    
-#     # Add parameter storage for Dynamixel#00i present position value
-#     dxl_addparam_result = groupSyncRead.addParam(i)
-#     if dxl_addparam_result != True:
-#         print("[ID:%03d] groupSyncRead addparam failed" % i)
-#         quit()
-
 def dxl_config(id_table):
   for i in id_table:
     # Disable Dynamixel#00i Torque
@@ -139,8 +122,7 @@ def get_dxl_position(id_table):
 calib_pos_dxl={}
 
 
-
-def get_calib_pos(calib_guide, id_table):
+def runCalibSteps(calib_guide, id_table):
   for idx, description in calib_guide.items():
     print("Set the robot to position ",idx, "- "+description)
     print("Ready? [y:proceed/n:exit]")
@@ -152,43 +134,6 @@ def get_calib_pos(calib_guide, id_table):
         break
       elif ch =='n' or ch=='N':
         exit()
-
-# def setCalibMap(calibMode,calib_input):
-#   range_map={"angle":{}, "raw":{}}
-#   for idx, val in calib_input.items():
-#     range_map["angle"][idx]=val
-#   if calibMode == "home":
-#     idx=0
-#     range_map["raw"][idx]=[calib_pos_dxl[0][idx]-2200,calib_pos_dxl[0][idx]+2200]
-#     idx=1
-#     range_map["raw"][idx]=[calib_pos_dxl[0][idx],calib_pos_dxl[0][idx]+2810]
-#     idx=2
-#     range_map["raw"][idx]=[calib_pos_dxl[0][idx]+3500,calib_pos_dxl[0][idx]]
-#     idx=3
-#     range_map["raw"][idx]=[calib_pos_dxl[0][idx]-3072,calib_pos_dxl[0][idx]+3072]
-#     idx=4
-#     range_map["raw"][idx]=[calib_pos_dxl[0][idx]+1023,calib_pos_dxl[0][idx]-1023]
-#     idx=5
-#     range_map["raw"][idx]=[calib_pos_dxl[0][idx]-3072,calib_pos_dxl[0][idx]+3072]
-#     idx=6
-#     range_map["raw"][idx]=[calib_pos_dxl[0][idx]-880,calib_pos_dxl[0][idx]]
-#   else:
-#     idx=0
-#     range_map["raw"][idx]=[calib_pos_dxl[0][idx]-2200,calib_pos_dxl[0][idx]+2200]
-#     idx=1
-#     range_map["raw"][idx]=[calib_pos_dxl[0][idx],calib_pos_dxl[2][idx]]
-#     idx=2
-#     range_map["raw"][idx]=[calib_pos_dxl[2][idx],calib_pos_dxl[0][idx]]
-#     idx=3
-#     range_map["raw"][idx]=[calib_pos_dxl[6][idx],calib_pos_dxl[5][idx]]
-#     idx=4
-#     range_map["raw"][idx]=[calib_pos_dxl[3][idx],calib_pos_dxl[4][idx]]
-#     idx=5
-#     range_map["raw"][idx]=[calib_pos_dxl[7][idx],calib_pos_dxl[8][idx]]
-#     idx=6
-#     range_map["raw"][idx]=[calib_pos_dxl[10][idx],calib_pos_dxl[9][idx]]
-#   print("Calibration procedure finished.")
-#   return range_map
 
 ##############################################################################
 # Main
@@ -247,7 +192,7 @@ elif _robotClass == "plantWatcher":
 
 dxl_id_table = list(calib_input_range.keys())
 dxl_config(dxl_id_table)
-get_calib_pos(_calib_guide, dxl_id_table)
+runCalibSteps(_calib_guide, dxl_id_table)
 # calib_map=setCalibMap(_calibMode, calib_input_range)
 
 

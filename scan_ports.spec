@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['cmd_socket.py'],
+    ['scan_ports.py'],
     pathex=[],
     binaries=[],
     datas=[],
@@ -26,7 +26,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='cmd_socket',
+    name='scan_ports',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -46,5 +46,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='cmd_socket',
+    name='scan_ports',
 )

@@ -47,7 +47,7 @@
  [],
  False,
  False,
- 1668332539,
+ 1670068370,
  [('run.exe',
    'C:\\Users\\Portal301\\Dropbox\\PythonWorkspace\\Portal301Projects\\RobotArm\\.venv\\lib\\site-packages\\PyInstaller\\bootloader\\Windows-64bit\\run.exe',
    'EXECUTABLE')])

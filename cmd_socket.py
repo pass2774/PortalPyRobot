@@ -14,7 +14,11 @@ import cmd_manager
 import sys
 
 # relative file path
-__dirname__ =os.path.dirname(os.path.realpath(__file__))
+if getattr(sys, 'frozen', False):
+    __dirname__ =os.path.join(sys._MEIPASS,"..","..") # runned as a .exe file
+else:
+    __dirname__ =os.path.dirname(os.path.realpath(__file__)) # runned as a .py file
+
 __filename_SP__ = os.path.join(__dirname__,"src","config","ServiceProfile.txt")
 
 
@@ -56,7 +60,7 @@ async def main():
     
     with open(__filename_SP__, "r") as file:
         serviceProfile=json.load(file)
-        serviceProfile['sid']=sio.sid
+        # serviceProfile['sid']=sio.sid
         serviceProfile['socketId']=sio.sid
         serviceProfile['room']='room:'+sio.sid
         serviceProfile['state']={'socketId':sio.sid,'roomId':'room:'+sio.sid}

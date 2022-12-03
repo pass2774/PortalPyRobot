@@ -8,9 +8,7 @@ a = Analysis(
     ['init_profile.py'],
     pathex=[],
     binaries=[],
-    datas=[
-        ('./src/config/*','./src/config'),
-    ],    
+    datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
