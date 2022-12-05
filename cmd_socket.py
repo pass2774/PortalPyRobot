@@ -56,15 +56,17 @@ async def on_message(msg):
 
 async def main():
     await sio.connect(url='https://api.portal301.com', transports = 'websocket')
-    # await sio.connect(url='https://192.168.0.11:3333',transports='websocket')
+    # await sio.connect(url='https://192.168.0.22:3333',transports='websocket')
     
     with open(__filename_SP__, "r") as file:
         serviceProfile=json.load(file)
         # serviceProfile['sid']=sio.sid
-        serviceProfile['socketId']=sio.sid
-        serviceProfile['room']='room:'+sio.sid
-        serviceProfile['state']={'socketId':sio.sid,'roomId':'room:'+sio.sid}
-    await sio.emit('Start_Service', json.dumps(serviceProfile))
+        # serviceProfile['socketId']=sio.sid
+        # serviceProfile['room']='room:'+sio.sid
+        # serviceProfile["robot"]["state"]["socketId"]={"socketId":sio.sid,"roomId":"room:"+sio.sid}
+        serviceProfile["robot"]["state"]["socketId"]=sio.sid
+        serviceProfile["robot"]["state"]["roomId"]="room:"+sio.sid
+    await sio.emit('Start_Service', json.dumps(serviceProfile["robot"]))
     # task = sio.start_background_task(my_background_task, 123)
     await sio.wait()
 

@@ -4,10 +4,9 @@ import sys
 import os
 import json
 
-
-# ports = serial.tools.list_ports.comports()
-# for port, description, hwid in sorted(ports):
-#         print("{}: {} [{}]".format(port, description, hwid))
+ports = serial.tools.list_ports.comports()
+for port, description, hwid in sorted(ports):
+        print("{}: {} [{}]".format(port, description, hwid))
 
 # relative file path
 if getattr(sys, 'frozen', False):
@@ -55,16 +54,23 @@ class Object:
 
 
 if __name__ == "__main__":
+    ports = {}
     for port in COMPorts.get_com_ports().data:
         print("[{}]: {}".format(port.device, port.description))
+        if port.description == "USB Serial Port":
+            ports["dxlCh0"]={"port":port.device,"baudrate":57600}
+        else:
+            ports[port.description]={"port":port.device,"baudrate":57600}
+
+    if not "dxlCh0" in ports:
+        print("ERROR:failed to find serial port named '"+"dxlCh0"+"'")
+        quit()
 
     # print("Get device by description:"+COMPorts.get_device_by_description(description="USB-SERIAL CH340"))
     # print("Get description by port id:"+COMPorts.get_description_by_device(device="COM13"))
-
-    ports = {}
-    device = COMPorts.get_device_by_description(description="USB-SERIAL CH340")
-    if not device==None:
-        ports["dxlCh0"]={"port":device,"baudrate":"57600"}
+    # device = COMPorts.get_device_by_description(description="USB Serial Port")
+    # if not device==None:
+    #     ports["dxlCh0"]={"port":device,"baudrate":"57600"}
 
     with open(__filename_Comport__, "w") as file:
         json.dump(ports, file, indent = 4)

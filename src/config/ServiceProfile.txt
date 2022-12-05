@@ -1,19 +1,62 @@
 {
-    "sid": "PORTAL301/ROBOT-0000-QY2B-7Q4U-YAOU-E873",
-    "type": "ROBOT",
-    "nickname": "RobotArm_0000",
-    "description": "RobotArm",
-    "contents": {
-        "stream": [
-            "video"
-        ],
-        "motor": [
+    "cluster": {
+        "sid": "PORTAL301/ROBOT-0000-QY2B-7Q4U-YAOU-E873",
+        "spw": "0000",
+        "type": "CLUSTER",
+        "nickname": "RobotArm-0000",
+        "description": "service-cluster-robotArm",
+        "owner": "PORTAL301",
+        "contents": {
+            "ch0": [
+                "7-DOF robot arm",
+                "4-DOF ground vehicle"
+            ],
+            "ch1": [
+                "video"
+            ]
+        },
+        "state": {
+            "ch0": {
+                "sid": "PORTAL301/ROBOT-0000-QY2B-7Q4U-YAOU-E873:0"
+            },
+            "ch1": {
+                "sid": "PORTAL301/ROBOT-0000-QY2B-7Q4U-YAOU-E873:1"
+            }
+        }
+    },
+    "robot": {
+        "sid": "PORTAL301/ROBOT-0000-QY2B-7Q4U-YAOU-E873:0",
+        "spw": null,
+        "type": "ROBOT",
+        "nickname": "RobotArm-0000:ROBOT",
+        "description": "RobotArm",
+        "owner": "PORTAL301",
+        "contents": [
             "7-DOF robot arm",
             "4-DOF ground vehicle"
-        ]
+        ],
+        "state": {
+            "isClustered": true,
+            "cid": "PORTAL301/ROBOT-0000-QY2B-7Q4U-YAOU-E873",
+            "socketId": "----",
+            "roomId": "----"
+        }
     },
-    "owner": "PORTAL301",
-    "state": {
-        "socketId": "----"
+    "camera": {
+        "sid": "PORTAL301/ROBOT-0000-QY2B-7Q4U-YAOU-E873:1",
+        "spw": null,
+        "type": "CAMERA",
+        "nickname": "RobotArm-0000:CAMERA",
+        "description": "RobotCam",
+        "owner": "PORTAL301",
+        "contents": [
+            "video"
+        ],
+        "state": {
+            "isClustered": true,
+            "cid": "PORTAL301/ROBOT-0000-QY2B-7Q4U-YAOU-E873",
+            "socketId": "----",
+            "roomId": "----"
+        }
     }
 }

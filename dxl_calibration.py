@@ -40,11 +40,14 @@ _availableRobotClass = ["robotArm","plantWatcher"]
 
 if len(sys.argv) < 2 :
   print("INPUT ERROR: Input _robotClass")
+  print("Example input:")
+  print("* 'robotArm' -> full calibration")
+  print("* 'robotArm home' -> home calibration[single-step]")
+  print("Available robotClass ->")
+  print(_availableRobotClass)
   quit()
 elif not sys.argv[1] in _availableRobotClass:
   print("INPUT ERROR: Wrong input.")
-  print("Available robotClass ->")
-  print(_availableRobotClass)
   quit()
 
 _robotClass = sys.argv[1]
@@ -52,12 +55,25 @@ _calibMode = sys.argv[2] if len(sys.argv) > 2 else "home"
 
 
 # relative file path
-__dirname__ =os.path.dirname(os.path.realpath(__file__))
-__filename_calibration_dxl_arm__ = os.path.join(__dirname__,"src","calibration","dxl_arm.txt")
+if getattr(sys, 'frozen', False):
+    __dirname__ =os.path.join(sys._MEIPASS,"..","..") # runned as a .exe file
+else:
+    __dirname__ =os.path.dirname(os.path.realpath(__file__)) # runned as a .py file
 
-with open(os.path.join(__dirname__,"src","config","Comport.txt"), "r") as file:
-  config_comport=eval(file.readline())
-print("dxl_param reading success!")
+__filename_calibration_dxl_arm__ = os.path.join(__dirname__,"src","calibration","dxl_arm.txt")
+__filename_Comport__ = os.path.join(__dirname__,"src","config","Comport.txt")
+
+# with open(os.path.join(__dirname__,"src","config","Comport.txt"), "r") as file:
+#   config_comport=eval(file.readline())
+
+with open(__filename_Comport__, "r") as file:
+  config_comport=json.load(file)
+
+
+
+# with open(os.path.join(__dirname__,"src","config","Comport.txt"), "r") as file:
+#   config_comport=eval(file.readline())
+# print("dxl_param reading success!")
 
 # Comport Settings
 BAUDRATE                 = config_comport['dxlCh0']['baudrate']  # Dynamixel default baudrate : 57600
