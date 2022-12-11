@@ -79,6 +79,8 @@ with open(__filename_Comport__, "r") as file:
 BAUDRATE                 = config_comport['dxlCh0']['baudrate']  # Dynamixel default baudrate : 57600
 COMPORT                  = config_comport['dxlCh0']['port']      # Check which port is being used on your controller
                                                                    # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
+BAUDRATE = 57600
+COMPORT = "/dev/ttyUSB0"
 # Initialize PortHandler&PacketHandler instance
 portHandler = PortHandler(COMPORT)
 packetHandler = PacketHandler(PROTOCOL_VERSION)

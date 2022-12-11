@@ -1,1 +1,0 @@
-{'dxlCh0':{'port': 'COM7', 'baudrate': 57600},'Platform':{'port': 'COM5', 'baudrate': 57600},'Gimbal':{'port': 'COM7', 'baudrate': 115200},'LinuxExample':{'port':'/dev/ttyUSB0','baudrate':115200}}

@@ -41,14 +41,14 @@ async def disconnect():
 
 @sio.on('msg-v2')
 async def on_message(msg):
-    print("msg-v2(in):",msg)
+    #print("msg-v2(in):",msg,"\n")
     packet=json.loads(msg["message"])
     if packet["type"] == "DUP":
         cmd_manager.update_commandFile(packet["data"])
     elif packet["type"] == "CONFIG":
         cmd_manager.update_config(packet["data"])
     elif packet["type"] == "SIG":
-        print("SIG:",packet["data"])
+        print("SIG:",json.dumps(packet["data"]))
     else:
         print("unclassifed packet received!:")
         print(packet)

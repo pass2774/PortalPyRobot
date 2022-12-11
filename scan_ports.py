@@ -6,7 +6,7 @@ import json
 
 ports = serial.tools.list_ports.comports()
 for port, description, hwid in sorted(ports):
-        print("{}: {} [{}]".format(port, description, hwid))
+        print("port-{}: description -{} , hwid-[{}]".format(port, description, hwid))
 
 # relative file path
 if getattr(sys, 'frozen', False):
@@ -56,8 +56,9 @@ class Object:
 if __name__ == "__main__":
     ports = {}
     for port in COMPorts.get_com_ports().data:
-        print("[{}]: {}".format(port.device, port.description))
-        if port.description == "USB Serial Port":
+        print("PORT:[{}]  /  DESCRIPTION:{}".format(port.device, port.description))
+        # if port.description == "USB Serial Port":
+        if port.description == "USB <-> Serial Converter - USB <-> Serial Converter":
             ports["dxlCh0"]={"port":port.device,"baudrate":57600}
         else:
             ports[port.description]={"port":port.device,"baudrate":57600}

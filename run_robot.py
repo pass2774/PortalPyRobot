@@ -24,11 +24,10 @@ print = functools.partial(print, flush=True)
 
 import os
 import sys
-import json
 from pickle import FALSE
 import numpy as np
 import time
-from dynamixel_sdk import *                    # Uses Dynamixel SDK library
+import json
 sys.path.append("./src")
 from dxl_registerMap import *
 
@@ -48,6 +47,7 @@ else:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
 
+from dynamixel_sdk import *                    # Uses Dynamixel SDK library
 
 
 _availableRobotClass = ["robotArm","plantWatcher"]
@@ -110,7 +110,8 @@ with open(__filename_Comport__, "r") as file:
   config_comport=json.load(file)
 # Comport Settings
 BAUDRATE                 = config_comport['dxlCh0']['baudrate']  # Dynamixel default baudrate : 57600
-COMPORT                  = config_comport['dxlCh0']['port']      # Check which port is being used on your controller
+#COMPORT                  = config_comport['dxlCh0']['port']      # Check which port is being used on your controller
+COMPORT                  = "/dev/ttyUSB0"      # Check which port is being used on your controller
                                                                    # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*
 
 def interp_maps(x,map_x,map_y,dtype):
