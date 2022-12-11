@@ -28,10 +28,9 @@ import json
 from pickle import FALSE
 import numpy as np
 import time
+from dynamixel_sdk import *                    # Uses Dynamixel SDK library
 sys.path.append("./src")
 from dxl_registerMap import *
-
-
 
 if os.name == 'nt':
     import msvcrt
@@ -49,61 +48,89 @@ else:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         return ch
 
-from dynamixel_sdk import *                    # Uses Dynamixel SDK library
+
+
+_availableRobotClass = ["robotArm","plantWatcher"]
+
+if len(sys.argv) < 2 :
+  print("INPUT ERROR: Input _robotClass")
+  print("Available robotClass ->")
+  print(_availableRobotClass)
+  quit()
+elif not sys.argv[1] in _availableRobotClass:
+  print("INPUT ERROR: Wrong input.")
+  quit()
+
+_robotClass = sys.argv[1]
+
+
+
 # relative file path
 if getattr(sys, 'frozen', False):
     __dirname__ =os.path.join(sys._MEIPASS,"..","..") # runned as a .exe file
 else:
     __dirname__ =os.path.dirname(os.path.realpath(__file__)) # runned as a .py file
 __filename_Comport__ = os.path.join(__dirname__,"src","config","Comport.txt")
-__filename_command__ = os.path.join(__dirname__,"command.txt")
 __filename_flag__ = os.path.join(__dirname__,"flag.txt")
+# __filename_command__ = os.path.join(__dirname__,"command.txt")
+__filename_SP__ = os.path.join(__dirname__,"src","config","ServiceProfile.txt")
+with open(__filename_SP__, "r") as file:
+  serviceProfile=json.load(file)
+  _robotClass=serviceProfile["robot"]["_robotClass"]
+  __filename_command__ = os.path.join(__dirname__,"cmd_"+_robotClass+".txt")
+
+
+
+
+with open(os.path.join(__dirname__,"src","calibration","dxl_param.txt"), "r") as file:
+  dxl_param=json.load(file)
+    
+# dxl_default_angle = {0:0,1:-50,2:130,3:0,4:0,5:0}
+param_robotClass = dxl_param[_robotClass]
+dxl_pos_control = param_robotClass["dxl-pos-control"]
+dxl_id_pos=[int(id) for id in param_robotClass["dxl-pos-control"].keys()]
+dxl_id_vel=[int(id) for id in param_robotClass["dxl-vel-control"].keys()]
+home_position={id:dxl["home"] for id, dxl in param_robotClass["dxl-pos-control"].items()}
+dxl_goal_arm = home_position
+dxl_goal_position={}
+
+calib_map={}
+#read the calibration map data
+with open(os.path.join(__dirname__,"src","calibration","dxl_arm.txt"), "r") as file:
+  calib_map["pos"]=json.load(file)
+#   calib_map["arm"]=eval(file.readline())
+with open(os.path.join(__dirname__,"src","calibration","dxl_gv.txt"), "r") as file:
+  calib_map["vel"]=json.load(file)
+#   calib_map["gv"]=eval(file.readline())
+print("calibration map reading done!")
 
 # with open(os.path.join(__dirname__,"src","config","Comport.txt"), "r") as file:
 #   config_comport=eval(file.readline())
 with open(__filename_Comport__, "r") as file:
   config_comport=json.load(file)
-
-
-print("dxl_param reading success!")
-
 # Comport Settings
 BAUDRATE                 = config_comport['dxlCh0']['baudrate']  # Dynamixel default baudrate : 57600
 COMPORT                  = config_comport['dxlCh0']['port']      # Check which port is being used on your controller
-                                                                   # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*"
-
-with open(os.path.join(__dirname__,"src","calibration","dxl_param.txt"), "r") as file:
-  dxl_param=json.load(file)
-print("dxl_param reading success!")
-    
+                                                                   # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*
 
 def interp_maps(x,map_x,map_y,dtype):
+  print("interp_maps")
+  print(x)
+  print(map_x)
+  print(map_y)
   y={}
   for idx, value in x.items():
     if map_x[idx][1]>=map_x[idx][0]:
       y[idx]=np.interp(value,map_x[idx],map_y[idx]).astype(dtype)
     else:
       y[idx]=np.interp(-value,[-map_x[idx][0],-map_x[idx][1]],map_y[idx]).astype(dtype)
+  print("done")
   return y
 
-calib_map={}
-#read the calibration map data
-with open(os.path.join(__dirname__,"src","calibration","dxl_arm.txt"), "r") as file:
-  calib_map["arm"]=json.load(file)
-#   calib_map["arm"]=eval(file.readline())
-with open(os.path.join(__dirname__,"src","calibration","dxl_gv.txt"), "r") as file:
-  calib_map["gv"]=json.load(file)
-#   calib_map["gv"]=eval(file.readline())
-print("calibration map reading done!")
 
-# dxl_default_angle = {0:0,1:-50,2:130,3:0,4:0,5:0}
-home_position = dxl_param["home-position"]
-dxl_goal_arm = home_position
-dxl_goal_position={}
 
-dxl_id_arm =[0,1,2,3,4,5,6]
-# dxl_id_arm =[]
-dxl_id_gv =[21,22,23,24]
+
+
 
 # Initialize PortHandler instance - Set the port path
 portHandler = PortHandler(COMPORT)
@@ -119,23 +146,19 @@ groupSyncReadVel = GroupSyncRead(portHandler, packetHandler, ADDR_PRO_PRESENT_VE
 if portHandler.openPort():
     print("Succeeded to open the port")
 else:
-    print("Failed to open the port")
-    print("Press any key to terminate...")
-    getch()
+    print("Failed to open the port. Exiting..")
     quit()
 
 # Set port baudrate
 if portHandler.setBaudRate(BAUDRATE):
     print("Succeeded to change the baudrate")
 else:
-    print("Failed to change the baudrate")
-    print("Press any key to terminate...")
-    getch()
+    print("Failed to change the baudrate. Exiting..")
     quit()
 
 
-# Setup for gv(ground vehicle)
-for i in dxl_id_gv:
+# Setup for velocity controlled motors(ground vehicle)
+for i in dxl_id_vel:
     # Disable Dynamixel#00i Torque Before operation mode change
     dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, i, ADDR_PRO_TORQUE_ENABLE, TORQUE_DISABLE)
     if dxl_comm_result != COMM_SUCCESS:
@@ -166,7 +189,7 @@ for i in dxl_id_gv:
 
 command_idx=0
 # Setup
-for i in dxl_id_arm:
+for i in dxl_id_pos:
     # DISABLE Dynamixel#00i Torque
     dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, i, ADDR_PRO_TORQUE_ENABLE, TORQUE_DISABLE)
     if dxl_comm_result != COMM_SUCCESS:
@@ -186,14 +209,14 @@ for i in dxl_id_arm:
         print("Dynamixel#%d has been successfully connected" % i)
 
     # Set profile acceleration
-    dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, i, ADDR_PRO_PROFILE_ACC, dxl_param["profile"]["acc"][str(i)])
+    dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, i, ADDR_PRO_PROFILE_ACC, dxl_pos_control[str(i)]["profile"]["acc"])
     if dxl_comm_result != COMM_SUCCESS:
         print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
     elif dxl_error != 0:
         print("%s" % packetHandler.getRxPacketError(dxl_error))
 
     # Set profile velocity
-    dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, i, ADDR_PRO_PROFILE_VEL, dxl_param["profile"]["vel"][str(i)])
+    dxl_comm_result, dxl_error = packetHandler.write4ByteTxRx(portHandler, i, ADDR_PRO_PROFILE_VEL, dxl_pos_control[str(i)]["profile"]["vel"])
     if dxl_comm_result != COMM_SUCCESS:
         print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
     elif dxl_error != 0:
@@ -269,12 +292,12 @@ def dxl_ReadState(h_groupSyncRead,dxl_Ids,REG_ADDR,REG_LEN):
     return [True, dxl_current_state]
 
 def print_state(dxl_target_pos):
-    [isPosAvailable,dxl_current_pos]=dxl_ReadState(groupSyncReadPos,dxl_id_arm,ADDR_PRO_PRESENT_POSITION,LEN_PRO_PRESENT_POSITION)
+    [isPosAvailable,dxl_current_pos]=dxl_ReadState(groupSyncReadPos,dxl_id_pos,ADDR_PRO_PRESENT_POSITION,LEN_PRO_PRESENT_POSITION)
     # [isvelAvailable,dxl_current_vel]=dxl_ReadState(groupSyncReadVel,dxl_id_gv,ADDR_PRO_PRESENT_VELOCITY,LEN_PRO_PRESENT_VELOCITY)
     # time.sleep(1)
     if isPosAvailable:
         isReached = True
-        for id in dxl_id_arm:
+        for id in dxl_id_pos:
             i=str(id)
             if (abs(dxl_current_pos[i]-dxl_target_pos[i])) > DXL_MOVING_STATUS_THRESHOLD:
                 isReached = False
@@ -282,8 +305,8 @@ def print_state(dxl_target_pos):
             print("current pos:",dxl_current_pos)
 
 # Set to default state
-dxl_goal_position=interp_maps(home_position,calib_map["arm"]["pos"],calib_map["arm"]["raw"],np.int32)
-dxl_SyncWrite(groupSyncWritePos,dxl_id_arm,dxl_goal_position)
+dxl_goal_position=interp_maps(home_position,calib_map["pos"]["pos"],calib_map["pos"]["raw"],np.int32)
+dxl_SyncWrite(groupSyncWritePos,dxl_id_pos,dxl_goal_position)
 
 
 #main loop
@@ -292,11 +315,15 @@ while 1:
     [b_newData,command_idx,cmd_obj]=read_cmd(command_idx)
     if b_newData == True:
         # update target-state
-        dxl_goal_position=interp_maps(cmd_obj["arm"],calib_map["arm"]["pos"],calib_map["arm"]["raw"],np.int32)
-        dxl_goal_velocity=interp_maps(cmd_obj["gv"],calib_map["gv"]["vel"],calib_map["gv"]["raw"],np.int32)
+        print("update")
+        print(cmd_obj)
+        print("???")
+        print(calib_map)
+        dxl_goal_position=interp_maps(cmd_obj["pos"],calib_map["pos"]["pos"],calib_map["pos"]["raw"],np.int32)
+        # dxl_goal_velocity=interp_maps(cmd_obj["vel"],calib_map["vel"]["vel"],calib_map["vel"]["raw"],np.int32)
         # write to dxl
-        dxl_SyncWrite(groupSyncWritePos,dxl_id_arm,dxl_goal_position)
-        dxl_SyncWrite(groupSyncWriteVel,dxl_id_gv,dxl_goal_velocity)
+        dxl_SyncWrite(groupSyncWritePos,dxl_id_pos,dxl_goal_position)
+        # dxl_SyncWrite(groupSyncWriteVel,dxl_id_vel,dxl_goal_velocity)
 
     
     # if check_exit() == True:
@@ -305,7 +332,7 @@ while 1:
     #     time.sleep(5)
     #     break
 
-for i in dxl_id_arm:
+for i in dxl_id_pos:
     # DISABLE Dynamixel#00i Torque
     dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, i, ADDR_PRO_TORQUE_ENABLE, TORQUE_DISABLE)
     if dxl_comm_result != COMM_SUCCESS:

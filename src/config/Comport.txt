@@ -1,6 +1,6 @@
 {
     "dxlCh0": {
-        "port": "COM7",
+        "port": "COM15",
         "baudrate": 57600
     }
 }

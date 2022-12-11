@@ -3,13 +3,13 @@
         "sid": "PORTAL301/ROBOT-0000-QY2B-7Q4U-YAOU-E873",
         "spw": "0000",
         "type": "CLUSTER",
-        "nickname": "RobotArm-0000",
-        "description": "service-cluster-robotArm",
+        "nickname": "plantWatcher-0000",
+        "description": "service-cluster-plantWatcher",
         "owner": "PORTAL301",
         "contents": {
             "ch0": [
-                "7-DOF robot arm",
-                "4-DOF ground vehicle"
+                "3-DOF robot arm",
+                "1-DOF dolly"
             ],
             "ch1": [
                 "video"
@@ -28,12 +28,13 @@
         "sid": "PORTAL301/ROBOT-0000-QY2B-7Q4U-YAOU-E873:0",
         "spw": null,
         "type": "ROBOT",
-        "nickname": "RobotArm-0000:ROBOT",
-        "description": "RobotArm",
+        "nickname": "plantWatcher-0000:ROBOT",
+        "description": "dolly and arm",
+        "_robotClass": "plantWatcher",
         "owner": "PORTAL301",
         "contents": [
-            "7-DOF robot arm",
-            "4-DOF ground vehicle"
+            "3-DOF robot arm",
+            "1-DOF dolly"
         ],
         "state": {
             "isClustered": true,
@@ -46,7 +47,7 @@
         "sid": "PORTAL301/ROBOT-0000-QY2B-7Q4U-YAOU-E873:1",
         "spw": null,
         "type": "CAMERA",
-        "nickname": "RobotArm-0000:CAMERA",
+        "nickname": "plantWatcher-0000:CAMERA",
         "description": "RobotCam",
         "owner": "PORTAL301",
         "contents": [

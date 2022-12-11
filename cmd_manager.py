@@ -16,8 +16,13 @@ else:
     __dirname__ =os.path.dirname(os.path.realpath(__file__)) # runned as a .py file
 
 __filename_log_command__ = os.path.join(__dirname__,"log_command.txt")
-__filename_command__ = os.path.join(__dirname__,"command.txt")
 __filename_dxl_param__ = os.path.join(__dirname__,"src","calibration","dxl_param.txt")
+__filename_SP__ = os.path.join(__dirname__,"src","config","ServiceProfile.txt")
+with open(__filename_SP__, "r") as file:
+  serviceProfile=json.load(file)
+
+_robotClass=serviceProfile["robot"]["_robotClass"]
+__filename_command__ = os.path.join(__dirname__,"cmd_"+_robotClass+".txt")
 
 def static_vars(**kwargs):
     def decorate(func):
@@ -40,8 +45,6 @@ def timeStamp(arg):
 def logger(arg):
     logger.command = arg
     print("start time:",timeStamp.start)
-
-
 
 dxl_param={}
 with open((__filename_dxl_param__), "r") as file:
@@ -164,10 +167,15 @@ def update_config(packet):
     
 
 
-def toHome():
-  input_data_dict ={
-    "arm":dxl_param["home-position"], 
-    "gimbal":{0:0,1:0,2:0},
-    "gv":{21:0,22:0,23:0,24:0}
-  }
-  update_commandFile(input_data_dict)
+def toHome():      
+  # dxl_default_angle = {0:0,1:-50,2:130,3:0,4:0,5:0}
+  param_robotClass = dxl_param[_robotClass]
+  home_position={"pos":{id:dxl["home"] for id, dxl in param_robotClass["dxl-pos-control"].items()}}
+  print(home_position)
+  update_commandFile(home_position)
+  # input_data_dict ={
+  #   "arm":dxl_param["home-position"], 
+  #   "gimbal":{0:0,1:0,2:0},
+  #   "gv":{21:0,22:0,23:0,24:0}
+  # }
+  # update_commandFile(input_data_dict)

@@ -185,10 +185,10 @@ if _robotClass == "robotArm":
     }
 elif _robotClass == "plantWatcher":
   calib_input_range={
-    0:[-90, 90],
-    1:[-90, 90],
-    2:[-90,137],
-    3:[-270,270],
+    0:[ 0, 10*1000],
+    1:[ -90, 90],
+    2:[-180, 180],
+    3:[-180, 180],
   }
   if _calibMode == "home":
     _calib_guide={

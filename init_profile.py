@@ -15,24 +15,24 @@ __filename_SP__ = os.path.join(__dirname__,"src","config","ServiceProfile.txt")
 
 
 
-serviceProfile = {
-    'sid':'',
-    'spw':'0000',
-    'type':'ROBOT',
-    'nickname':'RobotArm_0000',
-    'description':'RobotArm',
-    'contents':{'stream':['video'],'motor':['7-DOF robot arm', '4-DOF ground vehicle']},
-    'owner':'PORTAL301',
-    'state':{'socketId':'----'},
-}
+# serviceProfile = {
+#     'sid':'',
+#     'spw':'0000',
+#     'type':'ROBOT',
+#     'nickname':'RobotArm_0000',
+#     'description':'RobotArm',
+#     'contents':{'stream':['video'],'motor':['7-DOF robot arm', '4-DOF ground vehicle']},
+#     'owner':'PORTAL301',
+#     'state':{'socketId':'----'},
+# }
 
 serviceProfile = {
     "cluster":{
         "sid":"",
         "spw":"0000",
         "type":"CLUSTER",
-        "nickname":"RobotArm-0000",
-        "description":"service-cluster-robotArm",
+        "nickname":"plantWatcher-0000",
+        "description":"service-cluster-plantWatcher",
         "owner":"PORTAL301",
         "contents":{},
         "state":{
@@ -45,9 +45,10 @@ serviceProfile = {
         "spw":None,
         "type":"ROBOT",
         "nickname":None,
-        "description":"RobotArm",
+        "description":"dolly and arm",
+        "_robotClass":"plantWatcher",
         "owner":None,
-        "contents":['7-DOF robot arm', '4-DOF ground vehicle'],
+        "contents":['3-DOF robot arm', '1-DOF dolly'],
         "state":{"isClustered":True,"cid":"----","socketId":"----","roomId":"----"}
     },
     "camera":{
@@ -62,26 +63,26 @@ serviceProfile = {
     }
 }
 
-serviceProfile_robot = {
-    "sid":"",
-    "spw":"0000",
-    "type":"ROBOT",
-    "nickname":"",
-    "description":"RobotArm",
-    "owner":"",
-    "contents":['7-DOF robot arm', '4-DOF ground vehicle'],
-    "state":{"cid":"----","socketId":"----","roomId":"----"}
-}
-serviceProfile_cam = {
-    "sid":"",
-    "spw":"0000",
-    "type":"CAMERA",
-    "nickname":"",
-    "description":"RobotCam",
-    "owner":"",
-    "contents":['video'],
-    "state":{"cid":"----","socketId":"----","roomId":"----"}
-}
+# serviceProfile_robot = {
+#     "sid":"",
+#     "spw":"0000",
+#     "type":"ROBOT",
+#     "nickname":"",
+#     "description":"RobotArm",
+#     "owner":"",
+#     "contents":['7-DOF robot arm', '4-DOF ground vehicle'],
+#     "state":{"cid":"----","socketId":"----","roomId":"----"}
+# }
+# serviceProfile_cam = {
+#     "sid":"",
+#     "spw":"0000",
+#     "type":"CAMERA",
+#     "nickname":"",
+#     "description":"RobotCam",
+#     "owner":"",
+#     "contents":['video'],
+#     "state":{"cid":"----","socketId":"----","roomId":"----"}
+# }
 
 
 
