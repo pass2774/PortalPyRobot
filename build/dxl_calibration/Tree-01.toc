@@ -1,0 +1,5 @@
+('C:\\Users\\Portal301\\Dropbox\\PythonWorkspace\\Portal301Projects\\RobotArm\\build\\dxl_calibration\\dynamixel_sdk-3.7.31-py3.10.egg',
+ None,
+ {'*.cp310-win_amd64.pyd', '*.pyc', '*.pyw', 'EGG-INFO', '*.py', '*.pyd'},
+ 'DATA',
+ [])
