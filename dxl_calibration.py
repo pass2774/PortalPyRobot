@@ -41,7 +41,7 @@ _availableRobotClass = ["robotArm","plantWatcher"]
 if len(sys.argv) < 2 :
   print("INPUT ERROR: Input _robotClass")
   print("Example input:")
-  print("* 'robotArm' -> full calibration")
+  print("* 'robotArm' -> full calibration[multi-step]")
   print("* 'robotArm home' -> home calibration[single-step]")
   print("Available robotClass ->")
   print(_availableRobotClass)
@@ -51,7 +51,7 @@ elif not sys.argv[1] in _availableRobotClass:
   quit()
 
 _robotClass = sys.argv[1]
-_calibMode = sys.argv[2] if len(sys.argv) > 2 else "home"
+_calibMode = sys.argv[2] if len(sys.argv) > 2 else "multi"
 
 
 # relative file path
@@ -117,7 +117,7 @@ def dxl_config(id_table):
     dxl_addparam_result = groupSyncRead.addParam(i)
     if dxl_addparam_result != True:
         print("[ID:%03d] groupSyncRead addparam failed" % i)
-        quit()
+        exit()
 
 
 def get_dxl_position(id_table):
@@ -145,7 +145,12 @@ def runCalibSteps(calib_guide, id_table):
     print("Set the robot to position ",idx, "- "+description)
     print("Ready? [y:proceed/n:exit]")
     while True:
-      ch = getch()
+      if _calibMode=="home":
+        print("--> Auto-ready")
+        ch= 'y'
+      else:
+        ch = getch()
+        
       if ch =='y' or ch=='Y':
         calib_pos_dxl[idx]=get_dxl_position(id_table)
         print("current pos:",calib_pos_dxl)        

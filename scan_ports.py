@@ -57,8 +57,9 @@ if __name__ == "__main__":
     ports = {}
     for port in COMPorts.get_com_ports().data:
         print("PORT:[{}]  /  DESCRIPTION:{}".format(port.device, port.description))
-        # if port.description == "USB Serial Port":
-        if port.description == "USB <-> Serial Converter - USB <-> Serial Converter":
+        if port.description == "USB <-> Serial Converter - USB <-> Serial Converter": # linux
+            ports["dxlCh0"]={"port":port.device,"baudrate":57600}
+        elif port.description == "USB Serial Port": # widonw
             ports["dxlCh0"]={"port":port.device,"baudrate":57600}
         else:
             ports[port.description]={"port":port.device,"baudrate":57600}

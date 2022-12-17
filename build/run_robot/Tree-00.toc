@@ -1,5 +1,10 @@
-('c:\\users\\portal301\\dropbox\\pythonworkspace\\portal301projects\\robotarm\\.venv\\lib\\site-packages\\pyserial-3.5-py3.10.egg',
+('/home/portal-farm-2/Desktop/PortalPyRobot-master/build/run_robot/dynamixel_sdk-3.7.31-py3.9.egg',
  None,
- {'*.pyw', 'EGG-INFO', '*.cp310-win_amd64.pyd', '*.pyc', '*.py', '*.pyd'},
+ {'*.abi3.so',
+  '*.cpython-39-aarch64-linux-gnu.so',
+  '*.py',
+  '*.pyc',
+  '*.so',
+  'EGG-INFO'},
  'DATA',
  [])

@@ -1,10 +1,10 @@
 {
-    "ttyS0": {
-        "port": "/dev/ttyS0",
-        "baudrate": 57600
-    },
     "dxlCh0": {
         "port": "/dev/ttyUSB0",
+        "baudrate": 57600
+    },
+    "ttyAMA0": {
+        "port": "/dev/ttyAMA0",
         "baudrate": 57600
     }
 }

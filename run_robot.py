@@ -110,8 +110,7 @@ with open(__filename_Comport__, "r") as file:
   config_comport=json.load(file)
 # Comport Settings
 BAUDRATE                 = config_comport['dxlCh0']['baudrate']  # Dynamixel default baudrate : 57600
-#COMPORT                  = config_comport['dxlCh0']['port']      # Check which port is being used on your controller
-COMPORT                  = "/dev/ttyUSB0"      # Check which port is being used on your controller
+COMPORT                  = config_comport['dxlCh0']['port']      # Check which port is being used on your controller
                                                                    # ex) Windows: "COM1"   Linux: "/dev/ttyUSB0" Mac: "/dev/tty.usbserial-*
 
 def interp_maps(x,map_x,map_y,dtype):
@@ -191,14 +190,22 @@ for i in dxl_id_vel:
 command_idx=0
 # Setup
 for i in dxl_id_pos:
+    print("before4")
+    print("i:",i)
+    print(ADDR_PRO_TORQUE_ENABLE)
+    print(portHandler)
     # DISABLE Dynamixel#00i Torque
     dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, i, ADDR_PRO_TORQUE_ENABLE, TORQUE_DISABLE)
+    print("before41")
+
     if dxl_comm_result != COMM_SUCCESS:
         print("%s" % packetHandler.getTxRxResult(dxl_comm_result))
     elif dxl_error != 0:
         print("%s" % packetHandler.getRxPacketError(dxl_error))
     else:
         print("Dynamixel#%d has been successfully connected" % i)
+
+    print("before44")
 
     # Enable Dynamixel#00i Torque
     dxl_comm_result, dxl_error = packetHandler.write1ByteTxRx(portHandler, i, ADDR_PRO_TORQUE_ENABLE, TORQUE_ENABLE)
@@ -228,6 +235,8 @@ for i in dxl_id_pos:
     if dxl_addparam_result != True:
         print("[ID:%03d] groupSyncRead addparam failed" % i)
         quit()
+
+print("before5")
 
 def read_cmd(latest_idx):
     b_update = False
@@ -304,6 +313,8 @@ def print_state(dxl_target_pos):
                 isReached = False
         if not isReached:
             print("current pos:",dxl_current_pos)
+
+print("before11")
 
 # Set to default state
 dxl_goal_position=interp_maps(home_position,calib_map["pos"]["pos"],calib_map["pos"]["raw"],np.int32)
