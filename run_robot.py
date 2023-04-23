@@ -62,7 +62,8 @@ elif not sys.argv[1] in _availableRobotClass:
   quit()
 
 _robotClass = sys.argv[1]
-
+print("class:")
+print(_robotClass)
 
 
 # relative file path
@@ -84,9 +85,16 @@ with open(__filename_SP__, "r") as file:
 
 with open(os.path.join(__dirname__,"src","calibration","dxl_param.txt"), "r") as file:
   dxl_param=json.load(file)
-    
+
+print(dxl_param)
+print("*****\n_robotClass:\n")
+print(_robotClass)
+print("*****\n??robotArm??\n")
+print(dxl_param['robotArm'])
+print("*****\n??dxl_param[robotClass]??\n")
 # dxl_default_angle = {0:0,1:-50,2:130,3:0,4:0,5:0}
 param_robotClass = dxl_param[_robotClass]
+print(param_robotClass)
 dxl_pos_control = param_robotClass["dxl-pos-control"]
 dxl_id_pos=[int(id) for id in param_robotClass["dxl-pos-control"].keys()]
 dxl_id_vel=[int(id) for id in param_robotClass["dxl-vel-control"].keys()]
@@ -323,7 +331,7 @@ dxl_SyncWrite(groupSyncWritePos,dxl_id_pos,dxl_goal_position)
 
 #main loop
 while 1:
-    print_state(dxl_goal_position)    
+    #print_state(dxl_goal_position)    
     [b_newData,command_idx,cmd_obj]=read_cmd(command_idx)
     if b_newData == True:
         # update target-state

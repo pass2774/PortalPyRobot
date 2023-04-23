@@ -30,7 +30,7 @@
         "type": "ROBOT",
         "nickname": "plantWatcher-0000:ROBOT",
         "description": "dolly and arm",
-        "_robotClass": "plantWatcher",
+        "_robotClass": "robotArm",
         "owner": "PORTAL301",
         "contents": [
             "3-DOF robot arm",
