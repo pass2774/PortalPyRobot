@@ -5,6 +5,25 @@
 
 - Markdown for github README.md
 
+## .py files frequently used:
+# on first terminal,
+- poetry run python cmd_socket.py
+
+
+# on another termial,
+[one-point calibration*] 
+
+- poetry run python dxl_calibration.py robotArm home
+
+[or, full calibarion(all steps)]
+
+- poetry run python dxl_calibration.py robotArm
+
+
+[start robot]
+
+- poetry run python run_robot.py robotArm
+
 
 ## Setup Poetry module for package management
 ### 0-1. Installing poetry 
@@ -89,4 +108,5 @@ In the same manner, you have to specify the serial port.
 (Below is under construction)
 
 
-3-1. run 'setup_dynamixel.py' it will install SDK for the dynamixel(dynamixel_sdk).
+3-1. run 'setup.py' it will install SDK for the dynamixel(dynamixel_sdk).
+ex) 'poetry run python setup.py install'
